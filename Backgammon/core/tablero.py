@@ -31,9 +31,9 @@ class board:
 
         self.celda[18] = []
 
-        self.celda[19] = ["B", "B", "B", "B", "B"]
+        self.celda[19] = ["B", "B"]
 
-        self.celda[20] = []
+        self.celda[20] = ["N", "N", "N"]
         self.celda[21] = []
         self.celda[22] = []
         self.celda[23] = []
