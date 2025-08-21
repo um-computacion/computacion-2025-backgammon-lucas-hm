@@ -1,0 +1,1 @@
+#hacer sistema de dados, efectos sobre el tipo de movimiento e incluir dobles

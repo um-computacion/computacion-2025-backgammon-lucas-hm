@@ -1,0 +1,35 @@
+
+Reglas básicas del Backgammon:
+
+    1. Preparación:
+    Cada jugador comienza con 15 fichas ubicadas en posiciones específicas del tablero. 
+
+2. Movimiento:
+Se utilizan dos dados para determinar los movimientos de las fichas. Un jugador puede mover una o dos fichas según la suma de los dados, o una sola ficha la suma de los dados en diferentes movimientos. 
+
+3. Dirección:
+Las fichas se mueven en direcciones opuestas, recorriendo el tablero hasta llegar a la "casa" del jugador (el cuadrante inferior derecho del tablero). 
+
+4. Puntos de Control:
+Un jugador controla un punto (triángulo) si tiene dos o más fichas en él. No se puede aterrizar una ficha en un punto controlado por el oponente (salvo que sea una sola ficha, en cuyo caso es capturada). 
+
+5. Captura:
+Si una ficha aterriza en un punto con una sola ficha del oponente, esta ficha es capturada y enviada a la barra. 
+
+6. Barra:
+Las fichas capturadas deben volver al juego desde la barra, entrando en el tablero por el cuadrante inicial del oponente y avanzando hacia la "casa" del jugador que las capturó. 
+
+7. Sacar Fichas:
+Una vez que todas las fichas están en la "casa", el jugador puede comenzar a sacarlas del tablero. Para ello, debe obtener el número exacto en el dado o usar ese número para mover otras fichas que estén más atrás. 
+
+8. Fin del juego:
+El primer jugador que saca todas sus fichas del tablero gana la partida. 
+
+
+estructura codigo
+/backgammon/
+├── core/           → lógica del juego
+├── cli/            → CLI
+├── pygame_ui/      → interfaz gráfica
+├── assets/         → imágenes, sonidos
+└── requirements.txt
