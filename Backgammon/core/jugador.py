@@ -27,3 +27,5 @@
 #     validar_movimiento(): Verificar si un movimiento es legal para este jugador
 
 #     obtener_movimientos_posibles(): Listar todos los movimientos válidos
+
+print("hola")
