@@ -8,24 +8,23 @@
 #     fichas_capturadas: Fichas en la barra
 
 #     fichas_sacadas: Fichas que ya salieron del tablero
+class jugador:
+    def __init__(self, barra, fichas_sacadas):
+        self.nombre1 = str(input("ingresa tu nombre: "))
+        self.nombre2 = str(input("ingresa tu nombre: "))
+        self.ficha = int(input("elige ficha (1 para blancas, 2 para rojas)"))
+        self.barra = barra
+        self.fichas_sacadas = fichas_sacadas
 
-# 2. Métodos esenciales:
-#     realizar_movimiento(): Lógica para elegir movimientos
-
-#     tirar_dados(): Simular el tiro de dados
-
-#     elegir_movimiento(): Decidir qué movimiento hacer (puede ser automático o por input)
-
-# 3. Métodos de estado:
-#     puede_sacar(): Verificar si puede comenzar a sacar fichas
-
-#     tiene_fichas_capturadas(): Check si tiene fichas en la barra
-
-#     ha_ganado(): Verificar si ganó (todas las fichas sacadas)
-
-# 4. Métodos de validación:
-#     validar_movimiento(): Verificar si un movimiento es legal para este jugador
-
-#     obtener_movimientos_posibles(): Listar todos los movimientos válidos
-
-print("hola")
+        if self.ficha == 1:
+            self.color1 = "B"
+            self.color2 = "R"
+            print(f"{self.nombre1} juega con Blancas, {self.nombre2} con Rojas")
+        elif self.ficha == 2:
+            self.color1 = "R"
+            self.color2 = "B"
+            print(f"{self.nombre1} juega con Rojas, {self.nombre2} con Blancas")
+        else:
+            print("Opción inválida. Asignando Blancas al Jugador 1")
+            self.color1 = "B"
+            self.color2 = "R"

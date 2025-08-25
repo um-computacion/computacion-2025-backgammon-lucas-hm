@@ -1,1 +1,4 @@
-#hacer sistema de dados, efectos sobre el tipo de movimiento e incluir dobles
+# 1. Métodos esenciales:
+#     tirar_dados(): Simular el tiro de dados
+
+#     realizar_movimiento(): Decidir qué movimiento hacer (puede ser automático o por input)
