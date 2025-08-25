@@ -28,3 +28,23 @@ class jugador:
             print("Opción inválida. Asignando Blancas al Jugador 1")
             self.color1 = "B"
             self.color2 = "R"
+if __name__ == "__main__":
+    # Código de prueba para la clase Jugador
+    print("🎲 TESTEO DE CLASE JUGADOR 🎲")
+    print("-" * 30)
+    
+    # Crear instancia de jugador
+    jugador = Jugador()
+    
+    # Mostrar información del jugador
+    print("\n📊 INFORMACIÓN DEL JUGADOR:")
+    print(f"Nombre 1: {jugador.nombre1}")
+    print(f"Nombre 2: {jugador.nombre2}")
+    print(f"Color 1: {jugador.color1}")
+    print(f"Color 2: {jugador.color2}")
+    print(f"Ficha elegida: {jugador.ficha}")
+    print(f"Barra: {jugador.barra}")
+    print(f"Fichas sacadas: {jugador.fichas_sacadas}")
+    
+    # Test de funcionalidades adicionales (si las tuvieras)
+    print("\n🧪 Prueba completada exitosamente!")
