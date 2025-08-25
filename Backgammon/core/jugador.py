@@ -4,10 +4,6 @@
 #     color: "B" (blanco) o "N" (negro)
 
 #     fichas_en_juego: Fichas aún en el tablero
-
-#     fichas_capturadas: Fichas en la barra
-
-#     fichas_sacadas: Fichas que ya salieron del tablero
 class jugador:
     def __init__(self, barra, fichas_sacadas):
         self.nombre1 = str(input("ingresa tu nombre: "))
