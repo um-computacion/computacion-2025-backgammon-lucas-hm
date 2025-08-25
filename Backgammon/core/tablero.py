@@ -188,17 +188,6 @@ class board:
         
         return False, None
 
-# Ejemplo de uso
 if __name__ == "__main__":
     tablero = board()
-    tablero.mostrar_board()
-    
-    # Ejemplo: mover ficha blanca desde punto 6 al punto 7 con dado 1
-    valido, mensaje = tablero.movimiento_valido(6, 7, "B", 1)
-    if valido:
-        tablero.mover_ficha(6, 7, "B")
-        print("Movimiento exitoso!")
-    else:
-        print(f"Error: {mensaje}")
-    
     tablero.mostrar_board()
