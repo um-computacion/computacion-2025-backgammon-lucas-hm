@@ -1,12 +1,7 @@
 # 1. Métodos esenciales:
 #     tirar_dados(): Simular el tiro de dados
 import random
-from tablero import board  # Importamos el tablero para usar sus funciones
-
 class Dice:
-    def __init__(self):
-        self.tablero = board()
-    
     def tirar_dados(self):
         """Tira los dados y devuelve los valores"""
         minimo = 1
