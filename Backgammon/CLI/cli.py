@@ -7,6 +7,7 @@ import sys
 import time
 from core.juego import Juego
 
+print("ejecutando cli.py ...")
 class BackgammonCLI:
     def __init__(self):
         self.juego = Juego()
@@ -223,3 +224,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
