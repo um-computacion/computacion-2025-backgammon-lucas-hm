@@ -5,7 +5,7 @@
 
 #     fichas_en_juego: Fichas aún en el tablero
 class jugador:
-    def __init__(self, barra, fichas_sacadas):
+    def datos(self, barra, fichas_sacadas):
         self.nombre1 = str(input("ingresa tu nombre: "))
         self.nombre2 = str(input("ingresa tu nombre: "))
         self.ficha = int(input("elige ficha (1 para blancas, 2 para negras)"))
@@ -25,4 +25,4 @@ class jugador:
             self.color1 = "B"
             self.color2 = "N"
 if __name__ == "__main__":
-    jugador.__init__()
+    jugador.datos()
