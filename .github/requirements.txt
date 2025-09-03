@@ -1,2 +1,13 @@
-coverage==7.3.0
-pytest==7.4.0
+pytest
+coverage
+requests
+pandas
+numpy
+matplotlib
+seaborn
+scipy
+scikit-learn
+statsmodels
+lxml
+beautifulsoup4
+pylint
