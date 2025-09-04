@@ -40,7 +40,7 @@ class BackgammonCLI:
                 self.salir()
             else:
                 print("❌ Opción no válida. Intenta nuevamente.")
-    
+
     def nueva_partida(self):
         """Inicia una nueva partida"""
         print("\n" + "="*50)
