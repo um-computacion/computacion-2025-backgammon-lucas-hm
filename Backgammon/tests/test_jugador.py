@@ -1,5 +1,6 @@
+import sys, os, unittest
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.jugador import jugador
-import unittest
 
 class test_jugador(unittest.TestCase):
     def test_datos(self):
