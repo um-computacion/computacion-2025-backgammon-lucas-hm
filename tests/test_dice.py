@@ -1,9 +1,5 @@
 import random, unittest
 from unittest.mock import patch
-
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from core.dice import Dice
 
 class TestDice(unittest.TestCase):

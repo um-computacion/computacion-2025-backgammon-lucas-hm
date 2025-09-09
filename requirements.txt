@@ -11,3 +11,7 @@ statsmodels
 lxml
 beautifulsoup4
 pylint
+flake8
+black
+mypy
+isorts
