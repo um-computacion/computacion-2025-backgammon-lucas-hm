@@ -1,17 +1,13 @@
-pytest
-coverage
-requests
-pandas
-numpy
-matplotlib
-seaborn
-scipy
-scikit-learn
-statsmodels
-lxml
-beautifulsoup4
-pylint
-flake8
-black
-mypy
-isorts
+ pytest
+ coverage
+ requests
+ pandas
+ numpy
+ matplotlib
+ seaborn
+ scipy
+ scikit-learn
+ statsmodels
+ lxml
+ beautifulsoup4
+ pylint
