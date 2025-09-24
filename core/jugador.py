@@ -5,12 +5,12 @@
 
 #     fichas_en_juego: Fichas aún en el tablero
 class jugador:
-    def __init__(self):
-        self.nombre1 = ""
-        self.nombre2 = ""
-        self.ficha = ""
-        self.ficha = 0
-        self.barra = 0
+def __init__(self, nombre1, nombre2, ficha, es_humano=True):
+        self.nombre = nombre
+        self.ficha = ficha
+        self.fichas_fuera = 0
+        self.fichas_en_barra = 0
+        self.es_humano = es_humano
 
     def datos(self, barra, fichas_sacadas):
         self.nombre1 = str(input("ingresa tu nombre: "))
