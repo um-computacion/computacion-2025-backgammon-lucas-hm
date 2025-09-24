@@ -1,23 +1,20 @@
-from dice import Dice
-from tablero import board
-from jugador import jugador
+from core.dice import Dice
+from core.tablero import board
+from core.jugador import jugador
 import random
 
 class Juego:
-    def __init__(self):
-        self.tablero = board()
-        self.dados = Dice()
-        self.jugadores = self.inicializar_jugadores()
-        self.turno_actual = "B"  # Comienzan las blancas
-        
+    def inicializar_jugadores(self):
+        jugador1 = Jugador("Jugador1", "blanco")
+        jugador2 = Jugador("Jugador2", "negro")
+        return [jugador1, jugador2]
+            
     def inicializar_jugadores(self):
         """Inicializa los jugadores y sus colores"""
         jugadores_info = jugador([], [])
         return {
-            "B": {"nombre": jugadores_info.nombre1 if jugadores_info.color1 == "B" else jugadores_info.nombre2,
-                  "color": "B"},
-            "N": {"nombre": jugadores_info.nombre2 if jugadores_info.color1 == "B" else jugadores_info.nombre1,
-                  "color": "N"}
+            "B": {"nombre": jugadores_info.nombre1 if jugadores_info.color1 == "B" else jugadores_info.nombre2,"color": "B"},
+            "N": {"nombre": jugadores_info.nombre2 if jugadores_info.color1 == "B" else jugadores_info.nombre1,"color": "N"}
         }
     
     def cambiar_turno(self):
