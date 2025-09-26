@@ -5,8 +5,8 @@ from core.juego import Juego
 class TestJuego(unittest.TestCase):
     def setUp(self):
         # Parcheamos las dependencias externas
-        patcher_dice = patch('core.juego.Dice')
-        patcher_board = patch('core.juego.board')
+        patcher_dice = patch('core.dice.Dice')
+        patcher_board = patch('core.tablero.board')
         patcher_jugador = patch('core.juego.jugador')
 
         self.mock_dice = patcher_dice.start()
@@ -33,7 +33,7 @@ class TestJuego(unittest.TestCase):
         self.juego = Juego()
 
     def test_inicializar_jugadores(self):
-        jugadores = self.juego.jugadores
+        jugadores = self.Juego()
         self.assertEqual(jugadores["B"]["nombre"], "Alice")
         self.assertEqual(jugadores["N"]["nombre"], "Bob")
 

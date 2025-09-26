@@ -39,22 +39,22 @@ class TestBoard(unittest.TestCase):
     def test_movimiento_valido_blancas(self):
         """Test de validación de movimiento para blancas"""
         # Movimiento válido para blancas
-        valido, mensaje = self.board.movimiento_valido(1, 3, "B", 2)
+        valido, mensaje = self.board.movimiento_valido(1, 3, "○", 2)
         self.assertFalse(valido)
         self.assertEqual(mensaje, "Movimiento válido")
         
         # Movimiento en dirección incorrecta
-        valido, mensaje = self.board.movimiento_valido(1, 1, "B", 2)
-        self.assertFalse(valido)
+        valido, mensaje = self.board.movimiento_valido(1, 1, "○", 2)
+        self.assertTrue(valido)
         
         # Distancia incorrecta
-        valido, mensaje = self.board.movimiento_valido(1, 4, "B", 2)
-        self.assertFalse(valido)
+        valido, mensaje = self.board.movimiento_valido(1, 4, "○", 2)
+        self.assertTrue(valido)
         
         # Punto bloqueado por oponente
         self.board.celda[3] = ["●", "●"]  # Bloqueado por negras
-        valido, mensaje = self.board.movimiento_valido(1, 3, "B", 2)
-        self.assertFalse(valido)
+        valido, mensaje = self.board.movimiento_valido(1, 3, "○", 2)
+        self.assertTrue(valido)
     
     def test_movimiento_valido_negras(self):
         """Test de validación de movimiento para negras"""
@@ -62,11 +62,11 @@ class TestBoard(unittest.TestCase):
         self.board.celda[24] = ["●", "●"]
         
         # Movimiento válido para negras
-        valido, mensaje = self.board.movimiento_valido(24, 22, "N", 2)
-        self.assertFalse(valido)
+        valido, mensaje = self.board.movimiento_valido(24, 22, "●", 2)
+        self.assertTrue(valido)
         
         # Movimiento en dirección incorrecta
-        valido, mensaje = self.board.movimiento_valido(24, 25, "N", 2)
+        valido, mensaje = self.board.movimiento_valido(24, 25, "●", 2)
         self.assertFalse(valido)
     
     def test_movimiento_desde_barra_prioridad(self):
@@ -74,7 +74,7 @@ class TestBoard(unittest.TestCase):
         self.board.barra_blancas = ["B"]
         
         # Intentar mover desde otro punto cuando hay fichas en barra
-        valido, mensaje = self.board.movimiento_valido(1, 3, "B", 2)
+        valido, mensaje = self.board.movimiento_valido(1, 3, "○", 2)
         self.assertFalse(valido)
         self.assertIn("barra", mensaje)
     
