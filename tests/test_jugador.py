@@ -9,8 +9,8 @@ class TestJugador(unittest.TestCase):
         player.datos(barra=0, fichas_sacadas=0)
         self.assertEqual(player.nombre1, "Alice")
         self.assertEqual(player.nombre2, "Bob")
-        self.assertEqual(player.color1, "B")
-        self.assertEqual(player.color2, "N")
+        self.assertEqual(player.color1, "○")
+        self.assertEqual(player.color2, "●")
         self.assertEqual(player.barra, 0)
         self.assertEqual(player.fichas_sacadas, 0)
 
@@ -20,8 +20,8 @@ class TestJugador(unittest.TestCase):
         player.datos(barra=5, fichas_sacadas=3)
         self.assertEqual(player.nombre1, "Carlos")
         self.assertEqual(player.nombre2, "Diana")
-        self.assertEqual(player.color1, "N")
-        self.assertEqual(player.color2, "B")
+        self.assertEqual(player.color1, "●")
+        self.assertEqual(player.color2, "○")
         self.assertEqual(player.barra, 5)
         self.assertEqual(player.fichas_sacadas, 3)
 
