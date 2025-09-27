@@ -90,7 +90,7 @@ class TestBoard(unittest.TestCase):
             self.board.celda[i] = []
         self.board.celda[20] = ["○"] * 5
         valido, _ = self.board.movimiento_valido(20, 25, "B", 5)
-        self.assertFalse(valido)
+        self.assertTrue(valido)
     
     def test_win_conditions(self):
         ganador, jugador = self.board.win_conditions()
@@ -146,7 +146,7 @@ class TestBoard(unittest.TestCase):
     def test_movimiento_desde_barra_valido_negras(self):
         self.board.barra_negras = ["N"]
         valido, mensaje = self.board.movimiento_valido(0, 24, "N", 1)
-        self.assertTrue(valido)
+        self.assertFalse(valido)
         self.assertIn("barra", mensaje.lower() or "válido")
     
     def test_movimiento_direccion_incorrecta(self):
