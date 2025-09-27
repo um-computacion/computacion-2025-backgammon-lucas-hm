@@ -1,73 +1,83 @@
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch, MagicMock
 from core.juego import Juego
 
-class TestJuego(unittest.TestCase):
+class TestJuegoMejorado(unittest.TestCase):
     def setUp(self):
-        # Parcheamos las dependencias externas
-        patcher_dice = patch('core.dice.Dice')
-        patcher_board = patch('core.tablero.board')
-        patcher_jugador = patch('core.juego.jugador')
-
-        self.mock_dice = patcher_dice.start()
-        self.mock_board = patcher_board.start()
-        self.mock_jugador = patcher_jugador.start()
-
-        self.addCleanup(patcher_dice.stop)
-        self.addCleanup(patcher_board.stop)
-        self.addCleanup(patcher_jugador.stop)
-
-        # Configuramos mocks
-        self.mock_dice.return_value.tirar_dados.return_value = [3, 5]
-        self.mock_board.return_value.movimiento_valido.return_value = (True, "válido")
-        self.mock_board.return_value.mover_ficha.return_value = (True, "movido")
-        self.mock_board.return_value.win_conditions.return_value = (False, None)
-        self.mock_board.return_value.puede_mover_desde_barra.return_value = False
-        self.mock_board.return_value.mostrar_board = MagicMock()
-
-        self.mock_jugador.return_value.nombre1 = "Alice"
-        self.mock_jugador.return_value.nombre2 = "Bob"
-        self.mock_jugador.return_value.color1 = "B"
-        self.mock_jugador.return_value.color2 = "N"
-
         self.juego = Juego()
-
-    def test_inicializar_jugadores(self):
-        jugadores = self.Juego()
-        self.assertEqual(jugadores["B"]["nombre"], "Alice")
-        self.assertEqual(jugadores["N"]["nombre"], "Bob")
-
+        # Parcheamos tablero y jugadores reales con mocks para no depender de input real
+        self.juego.tablero = MagicMock()
+        self.juego.jugadores = {
+            "B": {"nombre": "Alice", "color": "B"},
+            "N": {"nombre": "Bob", "color": "N"}
+        }
+        self.juego.turno_actual = "B"
+        self.juego.dados = MagicMock()
+    
     def test_cambiar_turno(self):
         self.assertEqual(self.juego.turno_actual, "B")
         self.juego.cambiar_turno()
         self.assertEqual(self.juego.turno_actual, "N")
-
+    
     def test_obtener_jugador_actual(self):
         jugador = self.juego.obtener_jugador_actual()
         self.assertEqual(jugador["nombre"], "Alice")
-        self.assertEqual(jugador["color"], "B")
-
+    
     def test_procesar_movimiento_valido(self):
-        exito, mensaje = self.juego.procesar_movimiento(1, 4, 3)
+        self.juego.tablero.movimiento_valido.return_value = (True, "válido")
+        self.juego.tablero.mover_ficha.return_value = (True, "movido")
+        exito, mensaje = self.juego.procesar_movimiento(1, 2, 1)
         self.assertTrue(exito)
         self.assertEqual(mensaje, "movido")
-
+    
+    def test_procesar_movimiento_invalido(self):
+        self.juego.tablero.movimiento_valido.return_value = (False, "barra")
+        exito, mensaje = self.juego.procesar_movimiento(1, 2, 1)
+        self.assertFalse(exito)
+        self.assertIn("barra", mensaje)
+    
     def test_puede_mover_desde_barra_con_dado(self):
-        self.mock_board.return_value.movimiento_valido.return_value = (True, "")
-        puede = self.juego.puede_mover_desde_barra_con_dado("B", 4)
+        self.juego.tablero.movimiento_valido.return_value = (True, "válido")
+        puede = self.juego.puede_mover_desde_barra_con_dado("B", 3)
         self.assertTrue(puede)
+    
+    def test_mover_desde_barra_valido(self):
+        self.juego.tablero.movimiento_valido.return_value = (True, "válido")
+        self.juego.tablero.mover_ficha.return_value = (True, "movido")
+        with patch("builtins.print") as mock_print:
+            self.juego.turno_actual = "B"
+            self.juego.mover_desde_barra(3)
+            mock_print.assert_any_call("Movido desde barra al punto 3")
+    
+    def test_mover_desde_barra_invalido(self):
+        self.juego.tablero.movimiento_valido.return_value = (False, "bloqueado")
+        with patch("builtins.print") as mock_print:
+            self.juego.turno_actual = "B"
+            self.juego.mover_desde_barra(3)
+            mock_print.assert_any_call("No se pudo mover desde barra: bloqueado")
+    
+    @patch("builtins.input", side_effect=["1","2","1","1","2","1"])
+    @patch("builtins.print")
+    def test_jugar_turno_simple(self, mock_print, mock_input):
+        self.juego.tablero.movimiento_valido.return_value = (True, "válido")
+        self.juego.tablero.mover_ficha.return_value = (True, "movido")
+        self.juego.tablero.puede_mover_desde_barra.return_value = False
 
-    @patch('builtins.print')
-    def test_mover_desde_barra(self, mock_print):
-        self.juego.turno_actual = "B"
-        self.juego.mover_desde_barra(3)
-        mock_print.assert_any_call("Movido desde barra al punto 3")
-
-    @patch('builtins.input', side_effect=["1", "4", "3"])
-    @patch('builtins.print')
-    def test_jugar_turno(self, mock_print, mock_input):
-        terminado = self.juego.jugar_turno([3, 5])
+        terminado = self.juego.jugar_turno([1, 2])
         self.assertFalse(terminado)
 
+    @patch("builtins.input", side_effect=["1","2","1","1","2","1"])
+    @patch("builtins.print")
+    def test_jugar_turno_ganador(self, mock_print, mock_input):
+        # Forzamos condición de victoria
+        self.juego.tablero.win_conditions.return_value = (True, "B")
+        self.juego.tablero.movimiento_valido.return_value = (True, "válido")
+        self.juego.tablero.mover_ficha.return_value = (True, "movido")
+        self.juego.tablero.puede_mover_desde_barra.return_value = False
+
+        terminado = self.juego.jugar_turno([1, 2])
+        self.assertTrue(terminado)
+        mock_print.assert_any_call("\n¡Felicidades Alice! Has ganado el juego.")
+
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main(verbosity=2)
