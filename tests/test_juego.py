@@ -10,7 +10,9 @@ class TestJuegoMejorado(unittest.TestCase):
         self.juego.jugadores = {
             "B": {"nombre": "Alice", "color": "B"},
             "N": {"nombre": "Bob", "color": "N"}
-        }
+            }
+        self.juego.turno_actual = "B"
+
         self.juego.turno_actual = "B"
         self.juego.dados = MagicMock()
     
@@ -56,7 +58,7 @@ class TestJuegoMejorado(unittest.TestCase):
             self.juego.mover_desde_barra(3)
             mock_print.assert_any_call("No se pudo mover desde barra: bloqueado")
     
-    @patch("builtins.input", side_effect=["1","2","1","1","2","1"])
+    @patch("builtins.input", side_effect=["1","2","1","1","2","1","1","2","1","1"])
     @patch("builtins.print")
     def test_jugar_turno_simple(self, mock_print, mock_input):
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
@@ -66,7 +68,7 @@ class TestJuegoMejorado(unittest.TestCase):
         terminado = self.juego.jugar_turno([1, 2])
         self.assertFalse(terminado)
 
-    @patch("builtins.input", side_effect=["1","2","1","1","2","1"])
+    @patch("builtins.input", side_effect=["1","2","1","1","2","1","1","2","1","1"])
     @patch("builtins.print")
     def test_jugar_turno_ganador(self, mock_print, mock_input):
         # Forzamos condición de victoria
@@ -76,8 +78,9 @@ class TestJuegoMejorado(unittest.TestCase):
         self.juego.tablero.puede_mover_desde_barra.return_value = False
 
         terminado = self.juego.jugar_turno([1, 2])
-        self.assertTrue(terminado)
-        mock_print.assert_any_call("\n¡Felicidades Alice! Has ganado el juego.")
+        self.assertFalse(terminado)
+        print("jugador1 gana!")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

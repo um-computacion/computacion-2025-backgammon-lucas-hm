@@ -12,24 +12,24 @@ class TestBackgammonCLI(unittest.TestCase):
         self.cli.mostrar_menu_principal()
         self.assertFalse(self.cli.running)
 
-    @patch('builtins.input', side_effect=["1", ""])  # Opción "Nueva Partida" → Enter
+    @patch('builtins.input', side_effect=["1", "", ""])  # Agrega un extra para evitar StopIteration
     def test_nueva_partida_automatica(self, mock_input):
         self.cli.juego.jugar_partida_completa = MagicMock()
         self.cli.nueva_partida()
         self.cli.juego.jugar_partida_completa.assert_called_once()
 
-    #@patch('builtins.input', side_effect=["2", "1", ""])  # Humano vs IA, elige blancas
-    #def test_partida_humano_vs_ia(self, mock_input):
-    #    self.cli.juego.jugador_actual = "B"
-    #    self.cli.juego.dados_disponibles.return_value = [1]
-    #    self.cli.juego.calcular_destino.return_value = 2
-    #    self.cli.juego.tablero.movimiento_valido.return_value = (True, "")
-    #    self.cli.juego.tablero.puede_mover_desde_barra.return_value = True
-    #    self.cli.juego.tablero.mostrar_board = MagicMock()
-    #    self.cli.juego.tablero.win_conditions.return_value = (True, "B")
-    #    self.cli.juego.tablero.mover_ficha = MagicMock()
-        #with patch('builtins.input', side_effect=["1", ""]):
-        #    self.cli.partida_humano_vs_ia()
+
+    @patch('builtins.input', side_effect=["2", "1", "", "", ""])  # agregá más "" según sea necesario
+    def test_partida_humano_vs_ia(self, mock_input):
+        self.cli.juego.jugador_actual = "B"
+        self.cli.juego.dados_disponibles.return_value = [1]
+        self.cli.juego.calcular_destino.return_value = 2
+        self.cli.juego.tablero.movimiento_valido.return_value = (True, "")
+        self.cli.juego.tablero.puede_mover_desde_barra.return_value = True
+        self.cli.juego.tablero.mostrar_board = MagicMock()
+        self.cli.juego.tablero.win_conditions.return_value = (True, "B")
+        self.cli.juego.tablero.mover_ficha = MagicMock()
+        self.cli.partida_humano_vs_ia()
 
     def test_mostrar_reglas(self):
         with patch('builtins.input', return_value=""):
