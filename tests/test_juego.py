@@ -81,6 +81,42 @@ class TestJuegoMejorado(unittest.TestCase):
         self.assertFalse(terminado)
         print("jugador1 gana!")
     
-    
+    def test_jugar_un_turno_y_terminar(self):
+        with patch.object(self.juego.tablero, "mostrar_board") as mock_board, \
+            patch.object(self.juego.dados, "tirar_dados", return_value=(1, 2)) as mock_dados, \
+            patch.object(self.juego, "jugar_turno", return_value=True) as mock_turno, \
+            patch.object(self.juego, "cambiar_turno") as mock_cambiar:
+
+            # Ejecutamos el bucle, pero gracias al mock devuelve True y se corta al primer turno
+            self.juego.jugar()
+
+            # Verificamos llamadas
+            mock_board.assert_called()                     # mostró el tablero al menos una vez
+            mock_dados.assert_called_once()                # tiró los dados
+            mock_turno.assert_called_once_with((1, 2))     # jugó el turno con ese resultado
+            mock_cambiar.assert_not_called()
+
+    def test_jugar_termina_inmediatamente(self):
+        with patch.object(self.juego.tablero, "mostrar_board") as mock_board, \
+            patch.object(self.juego.dados, "tirar_dados", return_value=(3, 4)) as mock_dados, \
+            patch.object(self.juego, "jugar_turno", return_value=True) as mock_turno, \
+            patch.object(self.juego, "cambiar_turno") as mock_cambiar:
+
+            # Ejecutamos jugar() → debe terminar al primer turno
+            self.juego.jugar()
+
+            # Verificaciones
+            mock_board.assert_called_once()                  # se mostró el tablero una vez
+            mock_dados.assert_called_once()                  # se tiraron los dados una vez
+            mock_turno.assert_called_once_with((3, 4))       # jugar_turno devolvió True
+            mock_cambiar.assert_not_called()
+
+    def test_jugar_termina_por_usuario(self):
+        with patch.object(self.juego.tablero, "mostrar_board"), \
+            patch.object(self.juego.dados, "tirar_dados", return_value=None), \
+            patch("builtins.print") as mock_print:
+            self.juego.jugar()
+            mock_print.assert_any_call("Juego terminado por el usuario")
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
