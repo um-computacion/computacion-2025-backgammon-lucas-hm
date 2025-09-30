@@ -2,7 +2,7 @@ import unittest
 from core.tablero import board
 
 class TestBoard(unittest.TestCase):
-    
+
     def setUp(self):
         """Configuración inicial para cada test"""
         self.board = board()
@@ -145,9 +145,10 @@ class TestBoard(unittest.TestCase):
 
     def test_movimiento_desde_barra_valido_negras(self):
         self.board.barra_negras = ["N"]
+        self.board.celda[24] = []  # aseguramos que no esté bloqueado
         valido, mensaje = self.board.movimiento_valido(0, 24, "N", 1)
-        self.assertFalse(valido)
-        self.assertIn("barra", mensaje.lower() or "válido")
+        self.assertTrue(valido)
+        self.assertIn("barra", mensaje.lower())
     
     def test_movimiento_direccion_incorrecta(self):
         # Blancas intentando mover hacia puntos menores
@@ -156,8 +157,8 @@ class TestBoard(unittest.TestCase):
         self.assertIn("blancas", mensaje.lower())
         
         # Negras intentando mover hacia puntos mayores
-        self.board.celda[24] = ["●", "●"]
-        valido, mensaje = self.board.movimiento_valido(24, 25, "N", 1)
+        self.board.celda[23] = ["●", "●"]
+        valido, mensaje = self.board.movimiento_valido(23, 24, "N", 1)
         self.assertFalse(valido)
         self.assertIn("negras", mensaje.lower())
 
@@ -180,6 +181,6 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(resultado)
         self.assertEqual(self.board.celda[4], ["○"])
         self.assertEqual(self.board.barra_negras, ["N"])
-
+    
 if __name__ == "__main__":
     unittest.main(verbosity=2)
