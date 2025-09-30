@@ -80,7 +80,7 @@ class TestJuegoMejorado(unittest.TestCase):
         terminado = self.juego.jugar_turno([1, 2])
         self.assertFalse(terminado)
         print("jugador1 gana!")
-
-
+    
+    
 if __name__ == "__main__":
     unittest.main(verbosity=2)
