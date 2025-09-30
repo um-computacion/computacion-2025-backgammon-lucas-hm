@@ -726,3 +726,81 @@ mi codigo de backgammon es completo? respondeme por si o por no, gracias
 
 #22
 decime cuales son los ajustes menores? la integracion de modulos la entiendo como hacer
+
+#23
+    def test_movimiento_direccion_incorrecta(self):
+        # Blancas intentando mover hacia puntos menores
+        valido, mensaje = self.board.movimiento_valido(1, 0, "B", 1)
+        self.assertFalse(valido)
+        self.assertIn("blancas", mensaje.lower())
+        
+        # Negras intentando mover hacia puntos mayores
+        self.board.celda[24] = ["●", "●"]
+        valido, mensaje = self.board.movimiento_valido(24, 25, "N", 1)
+        self.assertFalse(valido)
+        self.assertIn("negras", mensaje.lower())
+
+FAILED tests/test_tablero.py::TestBoard::test_movimiento_direccion_incorrecta - AssertionError: 'negras' not found in 'distancia incorrecta para sacar ficha. dado: 1, necesario: 24'
+
+#24
+como quedaria ese pedazo de codigo?
+
+#25
+    def test_movimiento_desde_barra_valido_negras(self):
+        self.board.barra_negras = ["N"]
+        valido, mensaje = self.board.movimiento_valido(0, 24, "N", 1)
+        self.assertFalse(valido)
+        self.assertIn("barra", mensaje.lower() or "válido")
+
+FAILED tests/test_tablero.py::TestBoard::test_movimiento_desde_barra_valido_negras - AssertionError: 'barra' not found in 'punto bloqueado por el oponente'
+
+este es el otro error
+
+#25
+arreglado, ahora tengo que añadir tests para llegar al 90% de coverage
+
+#26
+se puede combinar tests, por ejemplo un movimiento desde barra invalido?
+
+#27
+    # def test_jugar(self):
+    #     self.fin = juego_terminado()
+    #     if self.fin == False:
+    #         self.tablero.mostrar_board()
+    #     elif not self.fin:
+    #         cambiar_turno()
+    #     else:
+    #         self.fin()
+    #         print("juego terminado")
+
+este pedazo de codigo para testear el siguiente pedazo:
+
+def jugar(self):
+        """Bucle principal del juego"""
+        print("¡Bienvenido al Backgammon!")
+        print("Reglas:")
+        print("- Las Blancas (B) mueven hacia puntos mayores")
+        print("- Las Negras (N) mueven hacia puntos menores")
+        print("- Debes mover fichas desde la barra primero si las tienes")
+        print("- Gana el primero que saque todas sus fichas o forme 4 en línea")
+
+        juego_terminado = False
+        while not juego_terminado:
+            self.tablero.mostrar_board()
+            dados_resultado = self.dados.tirar_dados()
+            if dados_resultado is None:
+                print("Juego terminado por el usuario")
+                break
+
+            juego_terminado = self.jugar_turno(dados_resultado)
+
+            if not juego_terminado:
+                self.cambiar_turno()
+
+va bien?
+
+#28
+como seria el pedazo de codigo para testear lo que te pase?
+
+#29
+quiero aplicar el mismo test pero para cuando juego_terminado sea true
