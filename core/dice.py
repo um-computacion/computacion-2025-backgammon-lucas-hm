@@ -32,6 +32,3 @@ class Dice:
                 
             else:
                 print("Por favor responde 's' o 'n'")
-
-if __name__ == "__main__":
-    Dice.tirar_dados()
