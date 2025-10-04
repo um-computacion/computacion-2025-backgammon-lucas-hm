@@ -32,5 +32,3 @@ class jugador:
             print("Opción inválida. Asignando Blancas al Jugador 1")
             self.color1 = "○"
             self.color2 = "●"
-if __name__ == "__main__":
-    jugador.datos()
