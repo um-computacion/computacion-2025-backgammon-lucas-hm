@@ -10,11 +10,19 @@ class Juego:
         jugadores_info = jugador([], [])
         return {
             "B": {
-                "nombre": jugadores_info.nombre1 if jugadores_info.color1 == "B" else jugadores_info.nombre2,
+                "nombre": (
+                    jugadores_info.nombre1
+                    if jugadores_info.color1 == "B"
+                    else jugadores_info.nombre2
+                ),
                 "color": "B",
             },
             "N": {
-                "nombre": jugadores_info.nombre2 if jugadores_info.color1 == "B" else jugadores_info.nombre1,
+                "nombre": (
+                    jugadores_info.nombre2
+                    if jugadores_info.color1 == "B"
+                    else jugadores_info.nombre1
+                ),
                 "color": "N",
             },
         }
@@ -29,7 +37,9 @@ class Juego:
 
     def procesar_movimiento(self, desde, hasta, dado_usado):
         """Procesa un movimiento y actualiza el tablero"""
-        valido, mensaje = self.tablero.movimiento_valido(desde, hasta, self.turno_actual, dado_usado)
+        valido, mensaje = self.tablero.movimiento_valido(
+            desde, hasta, self.turno_actual, dado_usado
+        )
         if not valido:
             return False, mensaje
 
@@ -42,8 +52,10 @@ class Juego:
         - `dados_resultado`: lista con los dados obtenidos.
         - `movimientos`: lista opcional de tuplas (desde, hasta, dado) para testear sin input().
         """
-        print(f"\nTurno de {self.obtener_jugador_actual()['nombre']} "
-            f"({'Blancas' if self.turno_actual == 'B' else 'Negras'})")
+        print(
+            f"\nTurno de {self.obtener_jugador_actual()['nombre']} "
+            f"({'Blancas' if self.turno_actual == 'B' else 'Negras'})"
+        )
         print(f"Dados: {dados_resultado[0]} y {dados_resultado[1]}")
 
         # Si el jugador tiene fichas en la barra, debe moverlas primero
@@ -51,7 +63,9 @@ class Juego:
             print("Tienes fichas en la barra. Debes moverlas primero.")
             dado_usar = (
                 dados_resultado[0]
-                if self.puede_mover_desde_barra_con_dado(self.turno_actual, dados_resultado[0])
+                if self.puede_mover_desde_barra_con_dado(
+                    self.turno_actual, dados_resultado[0]
+                )
                 else dados_resultado[1]
             )
             self.mover_desde_barra(dado_usar)
@@ -76,8 +90,12 @@ class Juego:
                     if movimientos_iter is not None:
                         desde, hasta, dado = next(movimientos_iter)
                     else:
-                        desde = int(input("Ingresa punto de origen (1-24, 0 para barra): "))
-                        hasta = int(input("Ingresa punto destino (1-24, 25 para sacar): "))
+                        desde = int(
+                            input("Ingresa punto de origen (1-24, 0 para barra): ")
+                        )
+                        hasta = int(
+                            input("Ingresa punto destino (1-24, 25 para sacar): ")
+                        )
                         dado = int(input("Ingresa el dado a usar: "))
 
                     if dado not in dados_disponibles:

@@ -2,8 +2,9 @@ import unittest
 from unittest.mock import patch
 from core.jugador import jugador
 
+
 class TestJugador(unittest.TestCase):
-    @patch('builtins.input', side_effect=["Alice", "Bob", "1", "2"])
+    @patch("builtins.input", side_effect=["Alice", "Bob", "1", "2"])
     def test_datos_blancas(self, mock_input):
         player = jugador()
         player.datos(barra=0, fichas_sacadas=0)
@@ -14,7 +15,7 @@ class TestJugador(unittest.TestCase):
         self.assertEqual(player.barra, 0)
         self.assertEqual(player.fichas_sacadas, 0)
 
-    @patch('builtins.input', side_effect=["Carlos", "Diana", "2", "1"])
+    @patch("builtins.input", side_effect=["Carlos", "Diana", "2", "1"])
     def test_datos_negras(self, mock_input):
         player = jugador()
         player.datos(barra=5, fichas_sacadas=3)
@@ -24,6 +25,7 @@ class TestJugador(unittest.TestCase):
         self.assertEqual(player.color2, "○")
         self.assertEqual(player.barra, 5)
         self.assertEqual(player.fichas_sacadas, 3)
+
 
 if __name__ == "__main__":
     unittest.main()

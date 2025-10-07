@@ -1,12 +1,13 @@
 import unittest
 from core.tablero import board
 
+
 class TestBoard(unittest.TestCase):
 
     def setUp(self):
         """Configuración inicial para cada test"""
         self.board = board()
-    
+
     def test_initialization(self):
         """Test de inicialización correcta del tablero"""
         self.assertEqual(len(self.board.celda), 24)
@@ -17,7 +18,7 @@ class TestBoard(unittest.TestCase):
         self.assertEqual(self.board.barra_negras, [])
         self.assertEqual(self.board.fuera_blancas, [])
         self.assertEqual(self.board.fuera_negras, [])
-    
+
     def test_puede_mover_desde_barra(self):
         self.assertFalse(self.board.puede_mover_desde_barra("B"))
         self.assertFalse(self.board.puede_mover_desde_barra("N"))
@@ -26,7 +27,7 @@ class TestBoard(unittest.TestCase):
         self.assertFalse(self.board.puede_mover_desde_barra("N"))
         self.board.barra_negras = ["N"]
         self.assertTrue(self.board.puede_mover_desde_barra("N"))
-    
+
     def test_movimiento_valido_blancas(self):
         valido, mensaje = self.board.movimiento_valido(1, 3, "○", 2)
         self.assertTrue(valido)
@@ -38,23 +39,23 @@ class TestBoard(unittest.TestCase):
         valido, mensaje = self.board.movimiento_valido(1, 4, "○", 2)
         self.assertFalse(valido)
 
-        self.board.celda[3] = ["●", "●"]  
+        self.board.celda[3] = ["●", "●"]
         valido, _ = self.board.movimiento_valido(1, 3, "○", 2)
         self.assertFalse(valido)
-    
+
     def test_movimiento_valido_negras(self):
         self.board.celda[24] = ["●", "●"]
         valido, mensaje = self.board.movimiento_valido(24, 22, "●", 2)
         self.assertTrue(valido)
         valido, _ = self.board.movimiento_valido(24, 25, "●", 2)
         self.assertFalse(valido)
-    
+
     def test_mover_ficha_normal(self):
         resultado, _ = self.board.mover_ficha(1, 3, "B")
         self.assertTrue(resultado)
         self.assertEqual(self.board.celda[1], ["○"])
         self.assertIn("○", self.board.celda[3])
-    
+
     def test_mover_ficha_con_captura(self):
         self.board.celda[3] = ["●"]
         self.board.celda[1] = ["○", "○"]
@@ -62,14 +63,14 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(resultado)
         self.assertEqual(self.board.celda[3], ["○"])
         self.assertEqual(self.board.barra_negras, ["N"])
-    
+
     def test_mover_desde_barra(self):
         self.board.barra_blancas = ["B"]
         resultado, _ = self.board.mover_ficha(0, 1, "B")
         self.assertTrue(resultado)
         self.assertEqual(self.board.barra_blancas, [])
         self.assertIn("○", self.board.celda[1] or self.board.celda[0])
-    
+
     def test_puede_sacar(self):
         self.assertTrue(self.board.puede_sacar("B"))
         self.assertTrue(self.board.puede_sacar("N"))
@@ -77,21 +78,21 @@ class TestBoard(unittest.TestCase):
             self.board.celda[i] = []
         self.board.celda[19] = ["○"] * 15
         self.assertTrue(self.board.puede_sacar("B"))
-    
+
     def test_puede_sacar_con_barra(self):
         for i in range(1, 19):
             self.board.celda[i] = []
         self.board.celda[19] = ["○"] * 14
         self.board.barra_blancas = ["B"]
         self.assertFalse(self.board.puede_sacar("B"))
-    
+
     def test_movimiento_salida_valido(self):
         for i in range(1, 19):
             self.board.celda[i] = []
         self.board.celda[20] = ["○"] * 5
         valido, _ = self.board.movimiento_valido(20, 25, "B", 5)
         self.assertTrue(valido)
-    
+
     def test_win_conditions(self):
         ganador, jugador = self.board.win_conditions()
         self.assertFalse(ganador)
@@ -104,7 +105,7 @@ class TestBoard(unittest.TestCase):
         ganador, jugador = self.board.win_conditions()
         self.assertTrue(ganador)
         self.assertEqual(jugador, "N")
-    
+
     def test_win_conditions_4_consecutivas(self):
         for i in range(1, 5):
             self.board.celda[i] = ["○"]
@@ -118,12 +119,12 @@ class TestBoard(unittest.TestCase):
         ganador, jugador = self.board.win_conditions()
         self.assertTrue(ganador)
         self.assertEqual(jugador, "●")
-    
+
     def test_movimiento_invalido_punto_vacio(self):
         valido, mensaje = self.board.movimiento_valido(2, 4, "B", 2)
         self.assertFalse(valido)
         self.assertIn("no tienes fichas", mensaje.lower())
-    
+
     def test_movimiento_invalido_ficha_oponente(self):
         valido, mensaje = self.board.movimiento_valido(6, 8, "B", 2)
         self.assertFalse(valido)
@@ -134,7 +135,7 @@ class TestBoard(unittest.TestCase):
         self.board.capturar_ficha(5)
         self.assertEqual(self.board.celda[5], [])
         self.assertEqual(self.board.barra_negras, ["N"])
-    
+
     def test_movimiento_desde_barra_bloqueado(self):
         self.board.barra_blancas = ["B"]
         # Punto 2 bloqueado con 2 fichas negras
@@ -149,13 +150,13 @@ class TestBoard(unittest.TestCase):
         valido, mensaje = self.board.movimiento_valido(0, 24, "N", 1)
         self.assertTrue(valido)
         self.assertIn("barra", mensaje.lower())
-    
+
     def test_movimiento_direccion_incorrecta(self):
         # Blancas intentando mover hacia puntos menores
         valido, mensaje = self.board.movimiento_valido(1, 0, "B", 1)
         self.assertFalse(valido)
         self.assertIn("blancas", mensaje.lower())
-        
+
         # Negras intentando mover hacia puntos mayores
         self.board.celda[23] = ["●", "●"]
         valido, mensaje = self.board.movimiento_valido(23, 24, "N", 1)
@@ -173,7 +174,7 @@ class TestBoard(unittest.TestCase):
         valido, mensaje = self.board.movimiento_valido(1, 25, "B", 1)
         self.assertFalse(valido)
         self.assertIn("sacar", mensaje.lower())
-    
+
     def test_mover_ficha_captura_manual(self):
         self.board.celda[4] = ["●"]
         self.board.celda[1] = ["○"]
@@ -181,6 +182,7 @@ class TestBoard(unittest.TestCase):
         self.assertTrue(resultado)
         self.assertEqual(self.board.celda[4], ["○"])
         self.assertEqual(self.board.barra_negras, ["N"])
-    
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

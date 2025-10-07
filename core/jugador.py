@@ -3,6 +3,7 @@
 
 #     color: "B" (blanco) o "N" (negro)
 
+
 #     fichas_en_juego: Fichas aún en el tablero
 class jugador:
     def __init__(self, es_humano=True):
