@@ -1,0 +1,14 @@
+[run]
+source =
+    core
+    CLI
+omit =
+    */tests/*
+    */venv/*
+    */.venv/*
+
+[report]
+exclude_lines =
+    if __name__ == .__main__.:
+    pragma: no cover
+show_missing = True
