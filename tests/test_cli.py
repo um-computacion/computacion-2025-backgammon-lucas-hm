@@ -18,7 +18,6 @@ class TestBackgammonCLI(unittest.TestCase):
         self.cli.nueva_partida()
         self.cli.juego.jugar_partida_completa.assert_called_once()
 
-
     @patch('builtins.input', side_effect=["2", "1", "", "", ""])  # agregá más "" según sea necesario
     def test_partida_humano_vs_ia(self, mock_input):
         self.cli.juego.jugador_actual = "B"
