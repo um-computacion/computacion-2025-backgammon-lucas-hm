@@ -20,12 +20,14 @@ for i in range(1, 7):
     img = pygame.transform.scale(img, (100, 100))  # tamaño de los dados en pantalla
     dados_imgs.append(img)
 
+
 # --- Función para tirar dados ---
 def tirar_dados():
     dado1 = random.randint(1, 6)
     dado2 = random.randint(1, 6)
     jugadas = 4 if dado1 == dado2 else 2
     return dado1, dado2, jugadas
+
 
 # --- Variables de juego ---
 running = True

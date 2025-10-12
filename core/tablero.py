@@ -31,8 +31,12 @@ class board:
         self.fuera_negras = []
 
     def mostrar_board(self):
-        print(f"\nBarra Blancas: {self.barra_blancas} | Barra Negras: {self.barra_negras}")
-        print(f"Fuera Blancas: {len(self.fuera_blancas)} | Fuera Negras: {len(self.fuera_negras)}")
+        print(
+            f"\nBarra Blancas: {self.barra_blancas} | Barra Negras: {self.barra_negras}"
+        )
+        print(
+            f"Fuera Blancas: {len(self.fuera_blancas)} | Fuera Negras: {len(self.fuera_negras)}"
+        )
         for i in range(1, 25):
             print(f"{i}: {self.celda[i]}")
 
@@ -44,12 +48,18 @@ class board:
         return False
 
     def puede_sacar(self, jugador):
-        if (jugador == "B" and self.barra_blancas) or (jugador == "N" and self.barra_negras):
+        if (jugador == "B" and self.barra_blancas) or (
+            jugador == "N" and self.barra_negras
+        ):
             return False
 
         casa = range(19, 25) if jugador == "B" else range(1, 7)
         for punto in range(1, 25):
-            if punto not in casa and self.celda[punto] and self.celda[punto][0] == jugador:
+            if (
+                punto not in casa
+                and self.celda[punto]
+                and self.celda[punto][0] == jugador
+            ):
                 return False
         return True
 
@@ -81,7 +91,11 @@ class board:
                 return False, f"Debes entrar desde la barra al punto {destino_correcto}"
 
             # Verificar si punto destino está bloqueado
-            if self.celda[hasta] and self.celda[hasta][0] != jugador and len(self.celda[hasta]) > 1:
+            if (
+                self.celda[hasta]
+                and self.celda[hasta][0] != jugador
+                and len(self.celda[hasta]) > 1
+            ):
                 return False, "Punto bloqueado por el oponente"
 
             return True, "Movimiento válido desde barra"
@@ -93,11 +107,18 @@ class board:
             # Verificar distancia correcta para salida
             distancia_necesaria = (25 - desde) if jugador == "B" else desde
             if distancia_necesaria != dado:
-                return False, f"Distancia incorrecta para sacar ficha. Dado: {dado}, Necesario: {distancia_necesaria}"
+                return (
+                    False,
+                    f"Distancia incorrecta para sacar ficha. Dado: {dado}, Necesario: {distancia_necesaria}",
+                )
             return True, "Movimiento válido de salida"
 
         # 4️⃣ Verificar existencia de ficha en punto de origen
-        if not self.celda[desde] or (jugador == "B" and self.celda[desde][0] != "○") or (jugador == "N" and self.celda[desde][0] != "●"):
+        if (
+            not self.celda[desde]
+            or (jugador == "B" and self.celda[desde][0] != "○")
+            or (jugador == "N" and self.celda[desde][0] != "●")
+        ):
             return False, "No tienes fichas en ese punto"
 
         # 5️⃣ Validar dirección del movimiento
@@ -112,7 +133,11 @@ class board:
             return False, f"Distancia incorrecta. Dado: {dado}, Movimiento: {distancia}"
 
         # 7️⃣ Verificar si punto destino está bloqueado
-        if self.celda[hasta] and self.celda[hasta][0] != jugador and len(self.celda[hasta]) > 1:
+        if (
+            self.celda[hasta]
+            and self.celda[hasta][0] != jugador
+            and len(self.celda[hasta]) > 1
+        ):
             return False, "Punto bloqueado por el oponente"
 
         return True, "Movimiento válido"
@@ -128,7 +153,12 @@ class board:
                 return False, "No hay fichas en la barra"
         else:
             # Captura
-            if hasta <= 24 and self.celda[hasta] and self.celda[hasta][0] != jugador and len(self.celda[hasta]) == 1:
+            if (
+                hasta <= 24
+                and self.celda[hasta]
+                and self.celda[hasta][0] != jugador
+                and len(self.celda[hasta]) == 1
+            ):
                 self.capturar_ficha(hasta)
             ficha = self.celda[desde].pop()
 
@@ -158,7 +188,10 @@ class board:
 
         # 4 fichas consecutivas (blancas o negras)
         for i in range(1, 22):
-            if all(self.celda[i + j] and self.celda[i + j] == self.celda[i] for j in range(4)):
+            if all(
+                self.celda[i + j] and self.celda[i + j] == self.celda[i]
+                for j in range(4)
+            ):
                 return True, self.celda[i][0]
 
         return False, None

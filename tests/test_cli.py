@@ -2,23 +2,28 @@ import unittest
 from unittest.mock import patch, MagicMock
 from CLI.cli import BackgammonCLI
 
+
 class TestBackgammonCLI(unittest.TestCase):
     def setUp(self):
         self.cli = BackgammonCLI()
         self.cli.juego = MagicMock()  # Evita ejecutar lógica real del juego
 
-    @patch('builtins.input', side_effect=["5"])  # Simula opción "Salir"
+    @patch("builtins.input", side_effect=["5"])  # Simula opción "Salir"
     def test_mostrar_menu_principal_salir(self, mock_input):
         self.cli.mostrar_menu_principal()
         self.assertFalse(self.cli.running)
 
-    @patch('builtins.input', side_effect=["1", "", ""])  # Agrega un extra para evitar StopIteration
+    @patch(
+        "builtins.input", side_effect=["1", "", ""]
+    )  # Agrega un extra para evitar StopIteration
     def test_nueva_partida_automatica(self, mock_input):
         self.cli.juego.jugar_partida_completa = MagicMock()
         self.cli.nueva_partida()
         self.cli.juego.jugar_partida_completa.assert_called_once()
 
-    @patch('builtins.input', side_effect=["2", "1", "", "", ""])  # agregá más "" según sea necesario
+    @patch(
+        "builtins.input", side_effect=["2", "1", "", "", ""]
+    )  # agregá más "" según sea necesario
     def test_partida_humano_vs_ia(self, mock_input):
         self.cli.juego.jugador_actual = "B"
         self.cli.juego.dados_disponibles.return_value = [1]
@@ -31,7 +36,7 @@ class TestBackgammonCLI(unittest.TestCase):
         self.cli.partida_humano_vs_ia()
 
     def test_mostrar_reglas(self):
-        with patch('builtins.input', return_value=""):
+        with patch("builtins.input", return_value=""):
             self.cli.mostrar_reglas()
 
     def test_mostrar_historial(self):
@@ -47,6 +52,7 @@ class TestBackgammonCLI(unittest.TestCase):
     def test_salir(self):
         self.cli.salir()
         self.assertFalse(self.cli.running)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from core.juego import Juego
 
+
 class TestJuegoMejorado(unittest.TestCase):
     def setUp(self):
         self.juego = Juego()
@@ -9,40 +10,40 @@ class TestJuegoMejorado(unittest.TestCase):
         self.juego.tablero = MagicMock()
         self.juego.jugadores = {
             "B": {"nombre": "Alice", "color": "B"},
-            "N": {"nombre": "Bob", "color": "N"}
-            }
+            "N": {"nombre": "Bob", "color": "N"},
+        }
         self.juego.turno_actual = "B"
 
         self.juego.turno_actual = "B"
         self.juego.dados = MagicMock()
-    
+
     def test_cambiar_turno(self):
         self.assertEqual(self.juego.turno_actual, "B")
         self.juego.cambiar_turno()
         self.assertEqual(self.juego.turno_actual, "N")
-    
+
     def test_obtener_jugador_actual(self):
         jugador = self.juego.obtener_jugador_actual()
         self.assertEqual(jugador["nombre"], "Alice")
-    
+
     def test_procesar_movimiento_valido(self):
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
         exito, mensaje = self.juego.procesar_movimiento(1, 2, 1)
         self.assertTrue(exito)
         self.assertEqual(mensaje, "movido")
-    
+
     def test_procesar_movimiento_invalido(self):
         self.juego.tablero.movimiento_valido.return_value = (False, "barra")
         exito, mensaje = self.juego.procesar_movimiento(1, 2, 1)
         self.assertFalse(exito)
         self.assertIn("barra", mensaje)
-    
+
     def test_puede_mover_desde_barra_con_dado(self):
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         puede = self.juego.puede_mover_desde_barra_con_dado("B", 3)
         self.assertTrue(puede)
-    
+
     def test_mover_desde_barra_valido(self):
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
@@ -50,15 +51,17 @@ class TestJuegoMejorado(unittest.TestCase):
             self.juego.turno_actual = "B"
             self.juego.mover_desde_barra(3)
             mock_print.assert_any_call("Movido desde barra al punto 3")
-    
+
     def test_mover_desde_barra_invalido(self):
         self.juego.tablero.movimiento_valido.return_value = (False, "bloqueado")
         with patch("builtins.print") as mock_print:
             self.juego.turno_actual = "B"
             self.juego.mover_desde_barra(3)
             mock_print.assert_any_call("No se pudo mover desde barra: bloqueado")
-    
-    @patch("builtins.input", side_effect=["1","2","1","1","2","1","1","2","1","1"])
+
+    @patch(
+        "builtins.input", side_effect=["1", "2", "1", "1", "2", "1", "1", "2", "1", "1"]
+    )
     @patch("builtins.print")
     def test_jugar_turno_simple(self, mock_print, mock_input):
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
@@ -68,7 +71,9 @@ class TestJuegoMejorado(unittest.TestCase):
         terminado = self.juego.jugar_turno([1, 2])
         self.assertFalse(terminado)
 
-    @patch("builtins.input", side_effect=["1","2","1","1","2","1","1","2","1","1"])
+    @patch(
+        "builtins.input", side_effect=["1", "2", "1", "1", "2", "1", "1", "2", "1", "1"]
+    )
     @patch("builtins.print")
     def test_jugar_turno_ganador(self, mock_print, mock_input):
         # Forzamos condición de victoria
@@ -80,41 +85,53 @@ class TestJuegoMejorado(unittest.TestCase):
         terminado = self.juego.jugar_turno([1, 2])
         self.assertFalse(terminado)  # Debería ser True cuando hay ganador
         print("¡Felicidades Alice! Has ganado el juego.")
-    
+
     def test_jugar_un_turno_y_terminar(self):
-        with patch.object(self.juego.tablero, "mostrar_board") as mock_board, \
-            patch.object(self.juego.dados, "tirar_dados", return_value=(1, 2)) as mock_dados, \
-            patch.object(self.juego, "jugar_turno", return_value=True) as mock_turno, \
-            patch.object(self.juego, "cambiar_turno") as mock_cambiar:
+        with patch.object(
+            self.juego.tablero, "mostrar_board"
+        ) as mock_board, patch.object(
+            self.juego.dados, "tirar_dados", return_value=(1, 2)
+        ) as mock_dados, patch.object(
+            self.juego, "jugar_turno", return_value=True
+        ) as mock_turno, patch.object(
+            self.juego, "cambiar_turno"
+        ) as mock_cambiar:
 
             # Ejecutamos el bucle, pero gracias al mock devuelve True y se corta al primer turno
             self.juego.jugar()
 
             # Verificamos llamadas
-            mock_board.assert_called()                     # mostró el tablero al menos una vez
-            mock_dados.assert_called_once()                # tiró los dados
-            mock_turno.assert_called_once_with((1, 2))     # jugó el turno con ese resultado
+            mock_board.assert_called()  # mostró el tablero al menos una vez
+            mock_dados.assert_called_once()  # tiró los dados
+            mock_turno.assert_called_once_with(
+                (1, 2)
+            )  # jugó el turno con ese resultado
             mock_cambiar.assert_not_called()
 
     def test_jugar_termina_inmediatamente(self):
-        with patch.object(self.juego.tablero, "mostrar_board") as mock_board, \
-            patch.object(self.juego.dados, "tirar_dados", return_value=(3, 4)) as mock_dados, \
-            patch.object(self.juego, "jugar_turno", return_value=True) as mock_turno, \
-            patch.object(self.juego, "cambiar_turno") as mock_cambiar:
+        with patch.object(
+            self.juego.tablero, "mostrar_board"
+        ) as mock_board, patch.object(
+            self.juego.dados, "tirar_dados", return_value=(3, 4)
+        ) as mock_dados, patch.object(
+            self.juego, "jugar_turno", return_value=True
+        ) as mock_turno, patch.object(
+            self.juego, "cambiar_turno"
+        ) as mock_cambiar:
 
             # Ejecutamos jugar() → debe terminar al primer turno
             self.juego.jugar()
 
             # Verificaciones
-            mock_board.assert_called_once()                  # se mostró el tablero una vez
-            mock_dados.assert_called_once()                  # se tiraron los dados una vez
-            mock_turno.assert_called_once_with((3, 4))       # jugar_turno devolvió True
+            mock_board.assert_called_once()  # se mostró el tablero una vez
+            mock_dados.assert_called_once()  # se tiraron los dados una vez
+            mock_turno.assert_called_once_with((3, 4))  # jugar_turno devolvió True
             mock_cambiar.assert_not_called()
 
     def test_jugar_termina_por_usuario(self):
-        with patch.object(self.juego.tablero, "mostrar_board"), \
-            patch.object(self.juego.dados, "tirar_dados", return_value=None), \
-            patch("builtins.print") as mock_print:
+        with patch.object(self.juego.tablero, "mostrar_board"), patch.object(
+            self.juego.dados, "tirar_dados", return_value=None
+        ), patch("builtins.print") as mock_print:
             self.juego.jugar()
             mock_print.assert_any_call("Juego terminado por el usuario")
 
@@ -125,18 +142,18 @@ class TestJuegoMejorado(unittest.TestCase):
         mock_jugador_instance.nombre1 = "Ana"
         mock_jugador_instance.nombre2 = "Luis"
         mock_jugador_instance.color1 = "B"
-        
+
         # Mockear la clase jugador para que cuando se llame con cualquier argumento, devuelva nuestra instancia mock
-        with patch('core.juego.jugador') as mock_jugador_cls:
+        with patch("core.juego.jugador") as mock_jugador_cls:
             # Configurar el mock para que ignore los argumentos y siempre devuelva nuestra instancia
             mock_jugador_cls.return_value = mock_jugador_instance
-            
+
             resultado = self.juego.inicializar_jugadores()
-            
+
             # Verificar que se llamó a jugador con los argumentos correctos
             # (basado en tu código: jugador([], []))
             mock_jugador_cls.assert_called_once()
-            
+
             self.assertEqual(resultado["B"]["nombre"], "Ana")
             self.assertEqual(resultado["N"]["nombre"], "Luis")
             self.assertEqual(resultado["B"]["color"], "B")
@@ -149,14 +166,16 @@ class TestJuegoMejorado(unittest.TestCase):
         self.juego.tablero.win_conditions.return_value = (False, None)
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
-        
+
         # Mock para puede_mover_desde_barra_con_dado
-        with patch.object(self.juego, 'puede_mover_desde_barra_con_dado', return_value=True):
-            with patch.object(self.juego, 'mover_desde_barra') as mock_mover_barra:
+        with patch.object(
+            self.juego, "puede_mover_desde_barra_con_dado", return_value=True
+        ):
+            with patch.object(self.juego, "mover_desde_barra") as mock_mover_barra:
                 # Usar movimientos predefinidos para evitar input
                 movimientos = [(6, 9, 3)]
                 resultado = self.juego.jugar_turno([4, 3], movimientos)
-                
+
                 self.assertFalse(resultado)
                 mock_mover_barra.assert_called_once_with(4)
 
@@ -167,16 +186,16 @@ class TestJuegoMejorado(unittest.TestCase):
         self.juego.tablero.win_conditions.return_value = (False, None)
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
-        
+
         # Primer movimiento intenta usar dado 5 que no está disponible
         movimientos = [
             (1, 6, 5),  # Dado 5 no disponible (solo 4 y 3)
             (1, 4, 4),  # Luego movimiento válido
-            (4, 7, 3)   # Último movimiento
+            (4, 7, 3),  # Último movimiento
         ]
-        
+
         resultado = self.juego.jugar_turno([4, 3], movimientos)
-        
+
         self.assertFalse(resultado)
         mock_print.assert_any_call("Ese dado no está disponible")
 
@@ -185,27 +204,23 @@ class TestJuegoMejorado(unittest.TestCase):
         """Test para cuando se hace un movimiento inválido"""
         self.juego.tablero.puede_mover_desde_barra.return_value = False
         self.juego.tablero.win_conditions.return_value = (False, None)
-        
+
         # Primer movimiento inválido, segundo válido
         self.juego.tablero.movimiento_valido.side_effect = [
             (False, "Movimiento inválido"),
             (True, "Válido"),
-            (True, "Válido")
+            (True, "Válido"),
         ]
         self.juego.tablero.mover_ficha.side_effect = [
             (False, "No se pudo mover"),
             (True, "Movimiento exitoso"),
-            (True, "Movimiento exitoso")
+            (True, "Movimiento exitoso"),
         ]
-        
-        movimientos = [
-            (1, 5, 4),  # Inválido
-            (1, 4, 4),  # Válido
-            (4, 7, 3)   # Válido
-        ]
-        
+
+        movimientos = [(1, 5, 4), (1, 4, 4), (4, 7, 3)]  # Inválido  # Válido  # Válido
+
         resultado = self.juego.jugar_turno([4, 3], movimientos)
-        
+
         self.assertFalse(resultado)
         mock_print.assert_any_call("Movimiento inválido: Movimiento inválido")
 
@@ -216,16 +231,16 @@ class TestJuegoMejorado(unittest.TestCase):
         self.juego.tablero.win_conditions.return_value = (False, None)
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
-        
+
         # Simular input que causa ValueError seguido de input válido
         movimientos = [
             ("invalid", "invalid", "invalid"),  # Causa ValueError
             (1, 4, 4),  # Válido
-            (4, 7, 3)   # Válido
+            (4, 7, 3),  # Válido
         ]
-        
+
         resultado = self.juego.jugar_turno([4, 3], movimientos)
-        
+
         self.assertFalse(resultado)
         print("Por favor ingresa números válidos")
 
@@ -234,27 +249,32 @@ class TestJuegoMejorado(unittest.TestCase):
         """Test para cuando se acaban los movimientos en modo test"""
         self.juego.tablero.puede_mover_desde_barra.return_value = False
         self.juego.tablero.win_conditions.return_value = (False, None)
-        
+
         # No hay movimientos, causará StopIteration
         movimientos = []
-        
+
         resultado = self.juego.jugar_turno([4, 3], movimientos)
-        
+
         self.assertFalse(resultado)
 
     def test_jugar_con_varios_turnos(self):
         """Test para el bucle principal con varios turnos"""
-        with patch.object(self.juego.tablero, "mostrar_board") as mock_board, \
-            patch.object(self.juego.dados, "tirar_dados") as mock_dados, \
-            patch.object(self.juego, "jugar_turno") as mock_turno, \
-            patch.object(self.juego, "cambiar_turno") as mock_cambiar:
+        with patch.object(
+            self.juego.tablero, "mostrar_board"
+        ) as mock_board, patch.object(
+            self.juego.dados, "tirar_dados"
+        ) as mock_dados, patch.object(
+            self.juego, "jugar_turno"
+        ) as mock_turno, patch.object(
+            self.juego, "cambiar_turno"
+        ) as mock_cambiar:
 
             # Configurar para que el juego dure 2 turnos y luego termine
             mock_dados.side_effect = [[1, 2], [3, 4], [5, 6]]
             mock_turno.side_effect = [False, False, True]  # Tercer turno termina
-            
+
             self.juego.jugar()
-            
+
             # Verificar que se llamó 3 veces a los dados y al turno
             self.assertEqual(mock_dados.call_count, 3)
             self.assertEqual(mock_turno.call_count, 3)
@@ -264,9 +284,9 @@ class TestJuegoMejorado(unittest.TestCase):
     def test_puede_mover_desde_barra_con_dado_negras(self):
         """Test para puede_mover_desde_barra_con_dado con jugador N"""
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
-        
+
         puede = self.juego.puede_mover_desde_barra_con_dado("N", 3)
-        
+
         self.assertTrue(puede)
         # Verificar que se calcula correctamente el punto destino para negras
         self.juego.tablero.movimiento_valido.assert_called_with(0, 22, "N", 3)
@@ -275,11 +295,11 @@ class TestJuegoMejorado(unittest.TestCase):
         """Test para mover_desde_barra con jugador N"""
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
-        
+
         with patch("builtins.print") as mock_print:
             self.juego.turno_actual = "N"
             self.juego.mover_desde_barra(3)
-            
+
             # Para negras, punto destino debería ser 25 - 3 = 22
             mock_print.assert_any_call("Movido desde barra al punto 22")
 
@@ -288,6 +308,7 @@ class TestJuegoMejorado(unittest.TestCase):
         # Simplemente verificamos que podemos importar y el código no falla
         try:
             import core.juego
+
             # Si llegamos aquí, el import fue exitoso
             self.assertTrue(True)
         except ImportError:
