@@ -2,8 +2,8 @@
 source =
     core
     CLI
+    tests
 omit =
-    */tests/*
     */venv/*
     */.venv/*
 
