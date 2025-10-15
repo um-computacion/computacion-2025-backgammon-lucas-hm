@@ -1,3 +1,5 @@
+"""Lógica principal del juego de Backgammon"""
+
 from core.dice import Dice
 from core.tablero import board
 from core.jugador import jugador
@@ -5,6 +7,15 @@ import random
 
 
 class Juego:
+    """Clase que gestiona el flujo completo de una partida de Backgammon"""
+
+    def __init__(self):
+        """Inicializa el estado del juego"""
+        self.dados = Dice()
+        self.tablero = board()
+        self.jugadores = self.inicializar_jugadores()
+        self.turno_actual = "B"
+
     def inicializar_jugadores(self):
         """Inicializa los jugadores y sus colores"""
         jugadores_info = jugador([], [])
@@ -58,7 +69,6 @@ class Juego:
         )
         print(f"Dados: {dados_resultado[0]} y {dados_resultado[1]}")
 
-        # Si el jugador tiene fichas en la barra, debe moverlas primero
         if self.tablero.puede_mover_desde_barra(self.turno_actual):
             print("Tienes fichas en la barra. Debes moverlas primero.")
             dado_usar = (
@@ -73,13 +83,8 @@ class Juego:
         else:
             dados_disponibles = list(dados_resultado)
 
-        # Convertimos movimientos en iterador si viene del test
-        if movimientos is not None:
-            movimientos_iter = iter(movimientos)
-        else:
-            movimientos_iter = None
+        movimientos_iter = iter(movimientos) if movimientos is not None else None
 
-        # Procesar movimientos con los dados restantes
         while dados_disponibles:
             self.tablero.mostrar_board()
             print(f"Dados disponibles: {dados_disponibles}")
@@ -90,12 +95,8 @@ class Juego:
                     if movimientos_iter is not None:
                         desde, hasta, dado = next(movimientos_iter)
                     else:
-                        desde = int(
-                            input("Ingresa punto de origen (1-24, 0 para barra): ")
-                        )
-                        hasta = int(
-                            input("Ingresa punto destino (1-24, 25 para sacar): ")
-                        )
+                        desde = int(input("Ingresa punto de origen (1-24, 0 para barra): "))
+                        hasta = int(input("Ingresa punto destino (1-24, 25 para sacar): "))
                         dado = int(input("Ingresa el dado a usar: "))
 
                     if dado not in dados_disponibles:
@@ -112,10 +113,8 @@ class Juego:
                 except ValueError:
                     print("Por favor ingresa números válidos")
                 except StopIteration:
-                    # En modo test si no hay más movimientos
                     return False
 
-        # Verificar condiciones de victoria
         ganador, color_ganador = self.tablero.win_conditions()
         if ganador:
             nombre_ganador = self.jugadores[color_ganador]["nombre"]

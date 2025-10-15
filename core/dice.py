@@ -5,13 +5,12 @@ import random
 
 class Dice:
     def tirar_dados(self):
-        """Tira los dados y devuelve los valores con lógica de dobles"""
+        #Tira los dados y devuelve los valores con lógica de dobles
         minimo = 1
         maximo = 6
 
         while True:
             tirar = input("¿Tirar los dados? (s/n): ").lower().strip()
-
             if tirar in ["s", "si", "sí"]:
                 print("Tirando los dados...")
                 dado1 = random.randint(minimo, maximo)

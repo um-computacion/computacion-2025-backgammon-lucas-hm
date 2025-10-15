@@ -1,22 +1,33 @@
-# inicializar juego.py para correr toda la logica de juego
-"""
-Interfaz de línea de comandos para Backgammon
-"""
+"""Módulo CLI para ejecutar Backgammon desde consola"""
+
+# pylint: disable=no-member
+# pylint: disable=broad-exception-caught
 
 import sys
 import time
+from typing import TYPE_CHECKING
+
 from core.juego import Juego
+
+if TYPE_CHECKING:
+    from core.tablero import Tablero  # noqa: F401  --- sólo para anotaciones estáticas
 
 print("ejecutando cli.py ...")
 
 
 class BackgammonCLI:
+    """Interfaz de línea de comandos para jugar Backgammon"""
+
+    juego: Juego
+    running: bool
+
     def __init__(self):
+        """Inicializa la instancia del juego y el estado de ejecución"""
         self.juego = Juego()
         self.running = True
 
     def mostrar_menu_principal(self):
-        """Menú principal del juego"""
+        """Muestra el menú principal y gestiona la navegación del usuario"""
         while self.running:
             print("\n" + "=" * 50)
             print("🎲 BACKGAMMON - MENÚ PRINCIPAL 🎲")
@@ -44,12 +55,11 @@ class BackgammonCLI:
                 print("❌ Opción no válida. Intenta nuevamente.")
 
     def nueva_partida(self):
-        """Inicia una nueva partida"""
+        """Permite al usuario seleccionar el modo de juego"""
         print("\n" + "=" * 50)
         print("🎯 NUEVA PARTIDA")
         print("=" * 50)
 
-        # Configurar tipo de partida
         print("\nModos de juego:")
         print("1. 🤖 vs 🤖 (Automático completo)")
         print("2. 👤 vs 🤖 (Humano vs IA)")
@@ -66,7 +76,7 @@ class BackgammonCLI:
             self.partida_automatica()
 
     def partida_automatica(self):
-        """Partida completamente automática"""
+        """Ejecuta una partida automática entre dos IAs"""
         print("\n🤖 Iniciando partida automática...")
         print("Los movimientos se realizarán automáticamente")
         input("Presiona Enter para comenzar...")
@@ -75,10 +85,9 @@ class BackgammonCLI:
         input("\nPresiona Enter para volver al menú...")
 
     def partida_humano_vs_ia(self):
-        """Partida donde humano juega contra IA"""
+        """Configura y lanza una partida entre humano e IA"""
         print("\n👤 vs 🤖 Modo Humano vs IA")
 
-        # Seleccionar color
         print("\nSelecciona tu color:")
         print("1. ⚪ Blancas (empiezas primero)")
         print("2. ⚫ Negras (IA empieza primero)")
@@ -92,7 +101,7 @@ class BackgammonCLI:
         self.jugar_modo_humano_ia(jugador_humano)
 
     def jugar_modo_humano_ia(self, jugador_humano):
-        """Lógica para humano vs IA"""
+        """Ejecuta la lógica de turnos para el modo humano vs IA"""
         turno = 1
 
         while True:
@@ -100,17 +109,15 @@ class BackgammonCLI:
             self.juego.tablero.mostrar_board()
 
             if self.juego.jugador_actual == jugador_humano:
-                # Turno humano
                 self.turno_humano()
             else:
-                # Turno IA
                 print(
-                    f"🤖 IA ({'Blancas' if self.juego.jugador_actual == 'B' else 'Negras'}) pensando..."
+                    f"🤖 IA ({'Blancas' if self.juego.jugador_actual == 'B' else 'Negras'}) "
+                    "pensando..."
                 )
-                time.sleep(1)  # Pausa dramática
+                time.sleep(1)
                 self.juego.movimiento_automatico()
 
-            # Verificar fin del juego
             victoria, ganador = self.juego.tablero.win_conditions()
             if victoria:
                 self.mostrar_victoria(ganador)
@@ -119,12 +126,11 @@ class BackgammonCLI:
             turno += 1
 
     def turno_humano(self):
-        """Maneja el turno de un jugador humano"""
+        """Gestiona el turno de un jugador humano"""
         print(
             f"👤 Tu turno ({'Blancas' if self.juego.jugador_actual == 'B' else 'Negras'})"
         )
 
-        # Mostrar movimientos posibles
         movimientos_posibles = self.obtener_movimientos_posibles()
 
         if not movimientos_posibles:
@@ -136,11 +142,10 @@ class BackgammonCLI:
         for i, (desde, hasta, dado) in enumerate(movimientos_posibles, 1):
             print(f"{i}. {desde} → {hasta} (dado: {dado})")
 
-        # Seleccionar movimiento
         while True:
             try:
                 seleccion = input(
-                    "\nSelecciona movimiento (1-{}): ".format(len(movimientos_posibles))
+                    f"\nSelecciona movimiento (1-{len(movimientos_posibles)}): "
                 ).strip()
                 if seleccion.lower() == "salir":
                     return
@@ -149,12 +154,10 @@ class BackgammonCLI:
                 if 0 <= idx < len(movimientos_posibles):
                     desde, hasta, dado = movimientos_posibles[idx]
                     break
-                else:
-                    print("❌ Selección fuera de rango")
+                print("❌ Selección fuera de rango")
             except ValueError:
                 print("❌ Ingresa un número válido")
 
-        # Ejecutar movimiento
         valido, mensaje = self.juego.tablero.movimiento_valido(
             desde, hasta, self.juego.jugador_actual, dado
         )
@@ -165,13 +168,11 @@ class BackgammonCLI:
             print(f"❌ {mensaje}")
 
     def obtener_movimientos_posibles(self):
-        """Obtiene todos los movimientos posibles para el jugador actual"""
+        """Calcula todos los movimientos válidos para el jugador actual"""
         movimientos = []
 
-        # Lógica para obtener movimientos basados en dados
-        # (Deberías implementar esto en juego.py)
         for dado in self.juego.dados_disponibles():
-            for punto in range(0, 25):  # 0 = barra, 1-24 = puntos normales
+            for punto in range(0, 25):
                 if punto == 0 and not self.juego.tablero.puede_mover_desde_barra(
                     self.juego.jugador_actual
                 ):
@@ -186,7 +187,7 @@ class BackgammonCLI:
         return movimientos
 
     def mostrar_reglas(self):
-        """Muestra las reglas del juego"""
+        """Imprime las reglas básicas del juego"""
         print("\n" + "=" * 50)
         print("📖 REGLAS DE BACKGAMMON")
         print("=" * 50)
@@ -203,19 +204,17 @@ class BackgammonCLI:
         input("Presiona Enter para continuar...")
 
     def mostrar_historial(self):
-        """Muestra historial de partidas"""
+        """Muestra el historial de partidas (placeholder)"""
         print("\n📊 Historial de partidas (próximamente...)")
-        # Aquí integrarías con una base de datos o archivo
         time.sleep(1)
 
     def configuracion(self):
-        """Menú de configuración"""
+        """Muestra el menú de configuración (placeholder)"""
         print("\n⚙️  Configuración (próximamente...)")
-        # Velocidad IA, nombres jugadores, etc.
         time.sleep(1)
 
     def mostrar_victoria(self, ganador):
-        """Muestra pantalla de victoria"""
+        """Muestra el mensaje de victoria y el estado final del tablero"""
         print("\n" + "🎉" * 20)
         print(f"🏆 ¡{'BLANCAS' if ganador == 'B' else 'NEGRAS'} GANAN! 🏆")
         print("🎉" * 20)
@@ -223,13 +222,13 @@ class BackgammonCLI:
         time.sleep(2)
 
     def salir(self):
-        """Sale del juego"""
+        """Finaliza la ejecución del juego"""
         print("\n👋 ¡Gracias por jugar Backgammon!")
         self.running = False
 
 
 def main():
-    """Función principal"""
+    """Punto de entrada principal para ejecutar la CLI"""
     try:
         cli = BackgammonCLI()
         cli.mostrar_menu_principal()
