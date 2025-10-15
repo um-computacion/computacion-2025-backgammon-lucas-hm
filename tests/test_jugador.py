@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from core.jugador import jugador
+from core.jugador import Jugador
 
 
 class TestJugador(unittest.TestCase):
