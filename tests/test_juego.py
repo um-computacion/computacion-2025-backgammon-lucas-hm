@@ -134,30 +134,29 @@ class TestJuegoMejorado(unittest.TestCase):
         ), patch("builtins.print") as mock_print:
             self.juego.jugar()
             mock_print.assert_any_call("Juego terminado por el usuario")
-
-    def test_inicializar_jugadores(self):
+    
+    @patch("core.juego.Jugador")
+    def test_inicializar_jugadores(self, mock_jugador_cls):
         """Test para inicializar_jugadores"""
+
         # Crear una instancia mock que simule el comportamiento real
         mock_jugador_instance = MagicMock()
         mock_jugador_instance.nombre1 = "Ana"
         mock_jugador_instance.nombre2 = "Luis"
         mock_jugador_instance.color1 = "B"
+        mock_jugador_instance.color2 = "N"
 
-        # Mockear la clase jugador para que cuando se llame con cualquier argumento, devuelva nuestra instancia mock
-        with patch("core.juego.jugador") as mock_jugador_cls:
-            # Configurar el mock para que ignore los argumentos y siempre devuelva nuestra instancia
-            mock_jugador_cls.return_value = mock_jugador_instance
+        # Configurar el mock para que ignore los argumentos y siempre devuelva nuestra instancia
+        mock_jugador_cls.return_value = mock_jugador_instance
 
-            resultado = self.juego.inicializar_jugadores()
+        juego = Juego()
+        resultado = juego.inicializar_jugadores()
 
-            # Verificar que se llamó a jugador con los argumentos correctos
-            # (basado en tu código: jugador([], []))
-            mock_jugador_cls.assert_called_once()
-
-            self.assertEqual(resultado["B"]["nombre"], "Ana")
-            self.assertEqual(resultado["N"]["nombre"], "Luis")
-            self.assertEqual(resultado["B"]["color"], "B")
-            self.assertEqual(resultado["N"]["color"], "N")
+        # Verificar que el diccionario de jugadores se construyó correctamente
+        self.assertEqual(resultado["B"]["nombre"], "Ana")
+        self.assertEqual(resultado["N"]["nombre"], "Luis")
+        self.assertEqual(resultado["B"]["color"], "B")
+        self.assertEqual(resultado["N"]["color"], "N")
 
     @patch("builtins.print")
     def test_jugar_turno_con_barra(self, mock_print):

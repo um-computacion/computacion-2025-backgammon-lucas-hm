@@ -2,7 +2,7 @@
 
 from core.dice import Dice
 from core.tablero import board
-from core.jugador import jugador
+from core.jugador import Jugador
 import random
 
 
@@ -13,12 +13,12 @@ class Juego:
         """Inicializa el estado del juego"""
         self.dados = Dice()
         self.tablero = board()
-        self.jugadores = self.inicializar_jugadores()
+        self.jugadores = Jugador()
         self.turno_actual = "B"
 
     def inicializar_jugadores(self):
         """Inicializa los jugadores y sus colores"""
-        jugadores_info = jugador([], [])
+        jugadores_info = Jugador()
         return {
             "B": {
                 "nombre": (
@@ -159,7 +159,3 @@ class Juego:
 
             if not juego_terminado:
                 self.cambiar_turno()
-
-
-if __name__ == "__main__":
-    Juego()
