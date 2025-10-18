@@ -15,8 +15,8 @@ class Screen:
         pygame.display.set_caption("Juego con Dados")
         self.clock = pygame.time.Clock()
 
-        self.background = pygame.image.load("assets/Tablero.png")
-        self.background = pygame.transform.scale(self.background, (self.WIDTH, self.HEIGHT))
+        self.background_base = pygame.image.load("assets/Tablero.png")
+        self.background_base = pygame.transform.scale(self.background_base, (self.WIDTH, self.HEIGHT))
 
         self.dados_imgs: list[pygame.Surface] = []
         for i in range(1, 7):
@@ -28,6 +28,7 @@ class Screen:
         self.dado2 = 0
         self.jugadas = 0
         self.running = True
+        self.turno_actual = "Blanco"  # Turno inicial
 
         self.coords: dict[int, tuple[int, int]] = {
             i: (150 + (i - 1) % 6 * 80 + (i > 6 and i < 13) * 200 + (i > 12) * ((24 - i) % 6 * 80), 900 if i <= 12 else 150)
@@ -56,6 +57,10 @@ class Screen:
         jugadas = 4 if dado1 == dado2 else 2
         return dado1, dado2, jugadas
 
+    def cambiar_turno(self):
+        """Alterna el turno entre Blanco y Negro"""
+        self.turno_actual = "Negro" if self.turno_actual == "Blanco" else "Blanco"
+
     def loop_principal(self):
         """Ejecuta el bucle principal del juego gráfico"""
         while self.running:
@@ -64,8 +69,16 @@ class Screen:
                     self.running = False
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     self.dado1, self.dado2, self.jugadas = self.tirar_dados()
+                    self.cambiar_turno()
 
-            self.window.blit(self.background, (0, 0))
+            # Fondo dinámico según turno
+            fondo_color = (240, 240, 255) if self.turno_actual == "Blanco" else (255, 240, 240)
+            fondo = self.background_base.copy()
+            overlay = pygame.Surface((self.WIDTH, self.HEIGHT))
+            overlay.set_alpha(60)
+            overlay.fill(fondo_color)
+            fondo.blit(overlay, (0, 0))
+            self.window.blit(fondo, (0, 0))
 
             if self.dado1 and self.dado2:
                 self.window.blit(self.dados_imgs[self.dado1 - 1], (250, 250))
@@ -74,6 +87,10 @@ class Screen:
                 font = pygame.font.SysFont(None, 48)
                 texto = font.render(f"Jugadas: {self.jugadas}", True, (0, 0, 255))
                 self.window.blit(texto, (300, 400))
+
+                color_turno = (0, 0, 0) if self.turno_actual == "Blanco" else (80, 0, 0)
+                turno_texto = font.render(f"Turno: {self.turno_actual}", True, color_turno)
+                self.window.blit(turno_texto, (300, 460))
 
             pygame.display.update()
             self.clock.tick(60)
@@ -84,3 +101,4 @@ class Screen:
 if __name__ == "__main__":
     juego = Screen()
     juego.loop_principal()
+    
