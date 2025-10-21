@@ -11,13 +11,14 @@ core/juego.py              90      4    96%   114, 120-122
 core/jugador.py            29      3    90%   48-50
 core/tablero.py           111     13    88%   34-41, 81, 91, 150-153, 169-172, 179
 tests/__init__.py           0      0   100%
+tests/testScreen.py        39      0   100%
 tests/test_cli.py          40      0   100%
-tests/test_dice.py         29      0   100%
-tests/test_juego.py       171      2    99%   313-314
+tests/test_dice.py         30      0   100%
+tests/test_juego.py       171      2    99%   326-327
 tests/test_jugador.py      24      0   100%
 tests/test_tablero.py     150      0   100%
 -----------------------------------------------------
-TOTAL                     813     77    91%
+TOTAL                     853     77    91%
 
 ```
 ## Pylint Report
