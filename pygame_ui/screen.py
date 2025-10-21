@@ -13,8 +13,8 @@ DADO_SIZE = (100, 100)
 FPS = 60
 COLOR_TURNO_BLANCO = (240, 240, 255)
 COLOR_TURNO_NEGRO = (255, 240, 240)
-RUTA_TABLERO = "assets/Tablero.png"
-RUTA_DADOS = "assets/dado-{}.png"
+RUTA_TABLERO = "/assets/Tablero.png"
+RUTA_DADOS = "/assets/dado-{}.png"
 RUTA_FICHA_BLANCA = "assets/ficha-blanca.png"
 RUTA_FICHA_NEGRA = "assets/ficha-negra.png"
 
@@ -152,12 +152,6 @@ class Screen:
                 self.estado.dado1, self.estado.dado2, self.estado.jugadas = self._tirar_dados()
                 self._cambiar_turno()
 
-
-def main() -> None:
-    """Punto de entrada del juego."""
+if __name__ == "__main__":
     juego = Screen()
     juego.loop_principal()
-
-
-if __name__ == "__main__":
-    main()

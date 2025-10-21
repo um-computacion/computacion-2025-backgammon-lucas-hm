@@ -33,8 +33,9 @@ class TestScreen(unittest.TestCase):
 
     def test_tirar_dados_valores_validos(self):
         """Verifica que los valores de los dados estén dentro del rango esperado"""
+        self.screen = Screen()
         for _ in range(100):
-            d1, d2, jugadas = self.screen.tirar_dados()
+            d1, d2, jugadas = self.screen._tirar_dados()
             self.assertIn(d1, range(1, 7))
             self.assertIn(d2, range(1, 7))
             self.assertIn(jugadas, [2, 4])
