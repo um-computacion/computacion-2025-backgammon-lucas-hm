@@ -6,6 +6,11 @@ from typing import Dict, List, Tuple
 
 import pygame
 
+import os
+
+# Base del proyecto: carpeta donde está este archivo (screen.py)
+BASE_DIR = os.path.dirname(__file__)
+
 # Constantes globales
 WIDTH = 1920
 HEIGHT = 1080
@@ -13,10 +18,10 @@ DADO_SIZE = (100, 100)
 FPS = 60
 COLOR_TURNO_BLANCO = (240, 240, 255)
 COLOR_TURNO_NEGRO = (255, 240, 240)
-RUTA_TABLERO = "/assets/Tablero.png"
-RUTA_DADOS = "/assets/dado-{}.png"
-RUTA_FICHA_BLANCA = "assets/ficha-blanca.png"
-RUTA_FICHA_NEGRA = "assets/ficha-negra.png"
+RUTA_TABLERO = os.path.join(BASE_DIR, "assets", "Tablero.png")
+RUTA_DADOS = os.path.join(BASE_DIR, "assets", "dado-{}.png")
+RUTA_FICHA_BLANCA = os.path.join(BASE_DIR, "assets", "ficha-blanca.png")
+RUTA_FICHA_NEGRA = os.path.join(BASE_DIR, "assets", "ficha-negra.png")
 
 
 @dataclass
@@ -49,8 +54,13 @@ class Screen:
 
     def _cargar_tablero(self) -> pygame.Surface:
         """Carga y escala el fondo del tablero."""
-        tablero = pygame.image.load(RUTA_TABLERO)
-        return pygame.transform.scale(tablero, (WIDTH, HEIGHT))
+        try:
+            print(f"Cargando tablero desde: {RUTA_TABLERO}")
+            tablero = pygame.image.load(RUTA_TABLERO)
+            return pygame.transform.scale(tablero, (WIDTH, HEIGHT))
+        except pygame.error as e:
+            print(f"❌ Error cargando tablero: {e}")
+            raise
 
     def _cargar_dados(self) -> List[pygame.Surface]:
         """Carga y escala las imágenes de los dados."""
@@ -153,5 +163,4 @@ class Screen:
                 self._cambiar_turno()
 
 if __name__ == "__main__":
-    juego = Screen()
-    juego.loop_principal()
+    Screen().loop_principal()
