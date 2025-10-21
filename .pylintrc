@@ -1,29 +1,31 @@
 [MASTER]
-# Agrega el directorio actual al PYTHONPATH para evitar errores de importación
 init-hook='import sys; sys.path.append(".")'
-
-# Archivos y carpetas a ignorar (podés ajustar según tu proyecto)
 ignore=env,__pycache__,.venv
-
-# Extensiones de archivos que Pylint debe analizar
 load-plugins=pylint.extensions.mccabe
 
 [MESSAGES CONTROL]
-# Desactiva errores de importación si estás usando rutas relativas o mocks
-disable=import-error
+# Desactivamos errores comunes falsos positivos en juegos o proyectos gráficos
+disable=
+    import-error,
+    no-member,
+    too-few-public-methods
 
 [REPORTS]
-# Activa los reportes de análisis
 reports=yes
+score=yes
 
 [DESIGN]
-# Reglas de complejidad y estructura
+# Ajustes realistas para un juego con Pygame
 max-args=5
-max-statements=50
-max-locals=15
-max-returns=6
-max-branches=12
-max-nested-blocks=5
-max-public-methods=20
-max-attributes=7
-min-public-methods=2
+max-statements=60
+max-locals=20
+max-returns=8
+max-branches=15
+max-nested-blocks=6
+max-public-methods=25
+max-attributes=12
+min-public-methods=1
+
+[FORMAT]
+max-line-length=100
+

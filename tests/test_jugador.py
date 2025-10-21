@@ -1,11 +1,16 @@
+"""Tests unitarios para la clase Jugador del módulo core.jugador"""
+
 import unittest
 from unittest.mock import patch
 from core.jugador import Jugador
 
 
 class TestJugador(unittest.TestCase):
+    """Pruebas para el método datos de la clase Jugador"""
+
     @patch("builtins.input", side_effect=["Alice", "Bob", "1", "2"])
     def test_datos_blancas(self, mock_input):
+        """Verifica asignación de datos cuando el jugador elige blancas"""
         player = Jugador()
         player.datos(barra=0, fichas_sacadas=0)
         self.assertEqual(player.nombre1, "Alice")
@@ -17,6 +22,7 @@ class TestJugador(unittest.TestCase):
 
     @patch("builtins.input", side_effect=["Carlos", "Diana", "2", "1"])
     def test_datos_negras(self, mock_input):
+        """Verifica asignación de datos cuando el jugador elige negras"""
         player = Jugador()
         player.datos(barra=5, fichas_sacadas=3)
         self.assertEqual(player.nombre1, "Carlos")
@@ -29,3 +35,4 @@ class TestJugador(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

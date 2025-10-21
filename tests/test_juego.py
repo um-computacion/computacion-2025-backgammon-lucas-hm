@@ -5,6 +5,7 @@ from core.juego import Juego
 
 class TestJuegoMejorado(unittest.TestCase):
     def setUp(self):
+        # Configuración inicial para cada test
         self.juego = Juego()
         # Parcheamos tablero y jugadores reales con mocks para no depender de input real
         self.juego.tablero = MagicMock()
@@ -18,15 +19,18 @@ class TestJuegoMejorado(unittest.TestCase):
         self.juego.dados = MagicMock()
 
     def test_cambiar_turno(self):
+        """Test para verificar que el cambio de turno funciona correctamente"""
         self.assertEqual(self.juego.turno_actual, "B")
         self.juego.cambiar_turno()
         self.assertEqual(self.juego.turno_actual, "N")
 
     def test_obtener_jugador_actual(self):
+        """Test para verificar que se obtiene correctamente el jugador actual"""
         jugador = self.juego.obtener_jugador_actual()
         self.assertEqual(jugador["nombre"], "Alice")
 
     def test_procesar_movimiento_valido(self):
+        """Test para procesar un movimiento válido"""
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
         exito, mensaje = self.juego.procesar_movimiento(1, 2, 1)
@@ -34,17 +38,20 @@ class TestJuegoMejorado(unittest.TestCase):
         self.assertEqual(mensaje, "movido")
 
     def test_procesar_movimiento_invalido(self):
+        """Test para procesar un movimiento inválido"""
         self.juego.tablero.movimiento_valido.return_value = (False, "barra")
         exito, mensaje = self.juego.procesar_movimiento(1, 2, 1)
         self.assertFalse(exito)
         self.assertIn("barra", mensaje)
 
     def test_puede_mover_desde_barra_con_dado(self):
+        """Test para verificar movimiento desde barra con dado disponible"""
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         puede = self.juego.puede_mover_desde_barra_con_dado("B", 3)
         self.assertTrue(puede)
 
     def test_mover_desde_barra_valido(self):
+        """Test para movimiento válido desde la barra"""
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
         with patch("builtins.print") as mock_print:
@@ -53,6 +60,7 @@ class TestJuegoMejorado(unittest.TestCase):
             mock_print.assert_any_call("Movido desde barra al punto 3")
 
     def test_mover_desde_barra_invalido(self):
+        """Test para movimiento inválido desde la barra"""
         self.juego.tablero.movimiento_valido.return_value = (False, "bloqueado")
         with patch("builtins.print") as mock_print:
             self.juego.turno_actual = "B"
@@ -64,6 +72,7 @@ class TestJuegoMejorado(unittest.TestCase):
     )
     @patch("builtins.print")
     def test_jugar_turno_simple(self, mock_print, mock_input):
+        """Test para un turno simple sin condiciones especiales"""
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
         self.juego.tablero.mover_ficha.return_value = (True, "movido")
         self.juego.tablero.puede_mover_desde_barra.return_value = False
@@ -76,6 +85,7 @@ class TestJuegoMejorado(unittest.TestCase):
     )
     @patch("builtins.print")
     def test_jugar_turno_ganador(self, mock_print, mock_input):
+        """Test para un turno donde hay un ganador"""
         # Forzamos condición de victoria
         self.juego.tablero.win_conditions.return_value = (True, "B")
         self.juego.tablero.movimiento_valido.return_value = (True, "válido")
@@ -87,6 +97,7 @@ class TestJuegoMejorado(unittest.TestCase):
         print("¡Felicidades Alice! Has ganado el juego.")
 
     def test_jugar_un_turno_y_terminar(self):
+        """Test donde el juego termina después de un solo turno"""
         with patch.object(
             self.juego.tablero, "mostrar_board"
         ) as mock_board, patch.object(
@@ -109,6 +120,7 @@ class TestJuegoMejorado(unittest.TestCase):
             mock_cambiar.assert_not_called()
 
     def test_jugar_termina_inmediatamente(self):
+        """Test donde el juego termina inmediatamente después del primer turno"""
         with patch.object(
             self.juego.tablero, "mostrar_board"
         ) as mock_board, patch.object(
@@ -129,6 +141,7 @@ class TestJuegoMejorado(unittest.TestCase):
             mock_cambiar.assert_not_called()
 
     def test_jugar_termina_por_usuario(self):
+        """Test donde el juego termina por acción del usuario"""
         with patch.object(self.juego.tablero, "mostrar_board"), patch.object(
             self.juego.dados, "tirar_dados", return_value=None
         ), patch("builtins.print") as mock_print:
