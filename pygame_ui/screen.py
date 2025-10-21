@@ -18,10 +18,10 @@ DADO_SIZE = (100, 100)
 FPS = 60
 COLOR_TURNO_BLANCO = (240, 240, 255)
 COLOR_TURNO_NEGRO = (255, 240, 240)
-RUTA_TABLERO = os.path.join(BASE_DIR, "assets", "Tablero.png")
-RUTA_DADOS = os.path.join(BASE_DIR, "assets", "dado-{}.png")
-RUTA_FICHA_BLANCA = os.path.join(BASE_DIR, "assets", "ficha-blanca.png")
-RUTA_FICHA_NEGRA = os.path.join(BASE_DIR, "assets", "ficha-negra.png")
+RUTA_TABLERO = os.path.join(BASE_DIR, "..", "assets", "Tablero.png")
+RUTA_DADOS = os.path.join(BASE_DIR, "..", "assets", "dado-{}.png")
+RUTA_FICHA_BLANCA = os.path.join(BASE_DIR, "..", "assets", "ficha-blanca.png")
+RUTA_FICHA_NEGRA = os.path.join(BASE_DIR, "..", "assets", "ficha-negra.png")
 
 
 @dataclass
@@ -51,16 +51,30 @@ class Screen:
         self.coords: Dict[int, Tuple[int, int]] = self._generar_coordenadas()
         self.posiciones: Dict[int, List[Tuple[str, int]]] = {i: [] for i in range(1, 25)}
         self._inicializar_fichas()
+        # Precargar imágenes de fichas con fallback
+        if os.path.exists(RUTA_FICHA_BLANCA):
+            self.ficha_blanca_img = pygame.image.load(RUTA_FICHA_BLANCA)
+        else:
+            print("⚠️ No se encontró ficha blanca, usando placeholder")
+            self.ficha_blanca_img = pygame.Surface((50, 50))
+            self.ficha_blanca_img.fill((255, 255, 255))
+
+        if os.path.exists(RUTA_FICHA_NEGRA):
+            self.ficha_negra_img = pygame.image.load(RUTA_FICHA_NEGRA)
+        else:
+            print("⚠️ No se encontró ficha negra, usando placeholder")
+            self.ficha_negra_img = pygame.Surface((50, 50))
+            self.ficha_negra_img.fill((0, 0, 0))
+
 
     def _cargar_tablero(self) -> pygame.Surface:
         """Carga y escala el fondo del tablero."""
-        try:
-            print(f"Cargando tablero desde: {RUTA_TABLERO}")
-            tablero = pygame.image.load(RUTA_TABLERO)
-            return pygame.transform.scale(tablero, (WIDTH, HEIGHT))
-        except pygame.error as e:
-            print(f"❌ Error cargando tablero: {e}")
-            raise
+        if not os.path.exists(RUTA_TABLERO):
+            print(f"❌ No se encontró la imagen del tablero en: {RUTA_TABLERO}")
+        else:
+            print(f"✅ Cargando tablero desde: {RUTA_TABLERO}")
+        tablero = pygame.image.load(RUTA_TABLERO)
+        return pygame.transform.scale(tablero, (WIDTH, HEIGHT))
 
     def _cargar_dados(self) -> List[pygame.Surface]:
         """Carga y escala las imágenes de los dados."""
@@ -86,15 +100,18 @@ class Screen:
 
     def _inicializar_fichas(self) -> None:
         """Coloca las fichas iniciales en el tablero."""
-        # Ejemplo de distribución inicial básica
-        self.posiciones[1].append((RUTA_FICHA_BLANCA, 3))
-        self.posiciones[2].append((RUTA_FICHA_BLANCA, 5))
-        self.posiciones[5].append((RUTA_FICHA_BLANCA, 2))
-        self.posiciones[7].append((RUTA_FICHA_BLANCA, 5))
-        self.posiciones[20].append((RUTA_FICHA_NEGRA, 5))
-        self.posiciones[21].append((RUTA_FICHA_NEGRA, 3))
-        self.posiciones[23].append((RUTA_FICHA_NEGRA, 5))
-        self.posiciones[24].append((RUTA_FICHA_NEGRA, 2))
+        self.posiciones = {i: [] for i in range(1, 25)}
+
+        # Distribución inicial ejemplo
+        self.posiciones[1].append(("Blanca", 3))
+        self.posiciones[2].append(("Blanca", 5))
+        self.posiciones[5].append(("Blanca", 2))
+        self.posiciones[7].append(("Blanca", 5))
+        self.posiciones[20].append(("Negra", 5))
+        self.posiciones[21].append(("Negra", 3))
+        self.posiciones[23].append(("Negra", 5))
+        self.posiciones[24].append(("Negra", 2))
+
 
     @staticmethod
     def _tirar_dados() -> Tuple[int, int, int]:
@@ -147,11 +164,17 @@ class Screen:
         """Ejecuta el bucle principal del juego gráfico."""
         while self.estado.running:
             self._manejar_eventos()
-            self._dibujar_tablero()
-            self._dibujar_dados_y_texto()
+
+            # Dibujar en el orden correcto:
+            self._dibujar_tablero()       # Fondo del tablero
+            self._dibujar_fichas()        # Fichas sobre el tablero
+            self._dibujar_dados_y_texto() # Dados y texto sobre todo
+
             pygame.display.update()
             self.clock.tick(FPS)
+        
         pygame.quit()
+
 
     def _manejar_eventos(self) -> None:
         """Maneja los eventos del juego."""
@@ -162,5 +185,21 @@ class Screen:
                 self.estado.dado1, self.estado.dado2, self.estado.jugadas = self._tirar_dados()
                 self._cambiar_turno()
 
+    def _dibujar_fichas(self) -> None:
+        """Dibuja todas las fichas en el tablero, apiladas correctamente según su posición."""
+        for punto, fichas in self.posiciones.items():
+            x, y = self.coords[punto]
+            for ficha_color, cantidad in fichas:
+                img = self.ficha_blanca_img if ficha_color == "Blanca" else self.ficha_negra_img
+                for i in range(cantidad):
+                    # Si el punto está en la mitad superior del tablero, apilar hacia abajo
+                    if y < HEIGHT // 2:
+                        self.window.blit(img, (x, y + i * 30))
+                    # Si el punto está en la mitad inferior del tablero, apilar hacia arriba
+                    else:
+                        self.window.blit(img, (x, y - i * 30))
+
+
 if __name__ == "__main__":
-    Screen().loop_principal()
+    juego = Screen()
+    juego.loop_principal()
