@@ -324,7 +324,9 @@ class TestJuegoMejorado(unittest.TestCase):
             # Si llegamos aquí, el import fue exitoso
             self.assertTrue(True)
         except ImportError:
-            self.fail("No se pudo importar core.juego")
+            """Si falla, retornamos un mensaje de error, 2 formas de hacerlo"""
+            #return "No se pudo importar core.juego"
+            raise ImportError("No se pudo importar core.juego") from error
 
 
 if __name__ == "__main__":
