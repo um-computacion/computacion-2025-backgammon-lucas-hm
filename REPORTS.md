@@ -14,11 +14,11 @@ tests/__init__.py           0      0   100%
 tests/testScreen.py        39      0   100%
 tests/test_cli.py          40      0   100%
 tests/test_dice.py         30      0   100%
-tests/test_juego.py       171      2    99%   326-327
+tests/test_juego.py       172      3    98%   326-329
 tests/test_jugador.py      24      0   100%
 tests/test_tablero.py     150      0   100%
 -----------------------------------------------------
-TOTAL                     853     77    91%
+TOTAL                     854     78    91%
 
 ```
 ## Pylint Report
