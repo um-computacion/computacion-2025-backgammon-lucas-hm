@@ -1,205 +1,283 @@
-"""Interfaz gráfica del juego Backgammon usando pygame."""
-
-import random
-from dataclasses import dataclass
-from typing import Dict, List, Tuple
-
 import pygame
-
+import sys
+import random
 import os
 
-# Base del proyecto: carpeta donde está este archivo (screen.py)
-BASE_DIR = os.path.dirname(__file__)
+# Importar las clases de lógica del juego
+from core.dice import Dice
+from core.tablero import board
+from core.jugador import Jugador
+from core.juego import Juego
 
-# Constantes globales
-WIDTH = 1920
-HEIGHT = 1080
-DADO_SIZE = (100, 100)
+# --- Configuración de Pygame ---
+ANCHO_PANTALLA = 800
+ALTO_PANTALLA = 600
+CAPTION = "Backgammon en Pygame"
 FPS = 60
-COLOR_TURNO_BLANCO = (240, 240, 255)
-COLOR_TURNO_NEGRO = (255, 240, 240)
-RUTA_TABLERO = os.path.join(BASE_DIR, "..", "assets", "Tablero.png")
-RUTA_DADOS = os.path.join(BASE_DIR, "..", "assets", "dado-{}.png")
-RUTA_FICHA_BLANCA = os.path.join(BASE_DIR, "..", "assets", "ficha-blanca.png")
-RUTA_FICHA_NEGRA = os.path.join(BASE_DIR, "..", "assets", "ficha-negra.png")
+
+# Colores (R, G, B)
+NEGRO = (0, 0, 0)
+BLANCO = (255, 255, 255)
+GRIS_CLARO = (200, 200, 200)
+ROJO = (255, 0, 0)
+AZUL = (0, 0, 255)
 
 
-@dataclass
-class EstadoJuego:
-    """Agrupa el estado dinámico del juego."""
-    dado1: int = 0
-    dado2: int = 0
-    jugadas: int = 0
-    turno_actual: str = "Blanco"
-    running: bool = True
-
-
-class Screen:
-    """Clase que gestiona la ventana, tablero gráfico y dados."""
-
-    def __init__(self) -> None:
-        """Inicializa la ventana y los recursos gráficos."""
+class GameGUI:
+    """Clase principal para la interfaz gráfica del juego."""
+    def __init__(self):
+        """Inicializa la interfaz gráfica del juego."""
         pygame.init()
-        self.window: pygame.Surface = pygame.display.set_mode((WIDTH, HEIGHT))
-        pygame.display.set_caption("Backgammon con Dados")
-        self.clock: pygame.time.Clock = pygame.time.Clock()
+        self.pantalla = pygame.display.set_mode((ANCHO_PANTALLA, ALTO_PANTALLA))
+        pygame.display.set_caption(CAPTION)
+        self.reloj = pygame.time.Clock()
+        self.juego = Juego()  # Instancia de la lógica del juego
+        self.fuente_base = pygame.font.Font(None, 24)
+        self.dados_resultado = []
+        self.estado_juego = "ESPERANDO_DADOS"
+        self.corriendo = False
+        
+        self._cargar_imagen_tablero()
+        self._inicializar_jugadores()
 
-        self.background_base: pygame.Surface = self._cargar_tablero()
-        self.dados_imgs: List[pygame.Surface] = self._cargar_dados()
-
-        self.estado: EstadoJuego = EstadoJuego()
-        self.coords: Dict[int, Tuple[int, int]] = self._generar_coordenadas()
-        self.posiciones: Dict[int, List[Tuple[str, int]]] = {i: [] for i in range(1, 25)}
-        self._inicializar_fichas()
-        # Precargar imágenes de fichas con fallback
-        if os.path.exists(RUTA_FICHA_BLANCA):
-            self.ficha_blanca_img = pygame.image.load(RUTA_FICHA_BLANCA)
-        else:
-            print("⚠️ No se encontró ficha blanca, usando placeholder")
-            self.ficha_blanca_img = pygame.Surface((50, 50))
-            self.ficha_blanca_img.fill((255, 255, 255))
-
-        if os.path.exists(RUTA_FICHA_NEGRA):
-            self.ficha_negra_img = pygame.image.load(RUTA_FICHA_NEGRA)
-        else:
-            print("⚠️ No se encontró ficha negra, usando placeholder")
-            self.ficha_negra_img = pygame.Surface((50, 50))
-            self.ficha_negra_img.fill((0, 0, 0))
-
-
-    def _cargar_tablero(self) -> pygame.Surface:
-        """Carga y escala el fondo del tablero."""
-        if not os.path.exists(RUTA_TABLERO):
-            print(f"❌ No se encontró la imagen del tablero en: {RUTA_TABLERO}")
-        else:
-            print(f"✅ Cargando tablero desde: {RUTA_TABLERO}")
-        tablero = pygame.image.load(RUTA_TABLERO)
-        return pygame.transform.scale(tablero, (WIDTH, HEIGHT))
-
-    def _cargar_dados(self) -> List[pygame.Surface]:
-        """Carga y escala las imágenes de los dados."""
-        return [
-            pygame.transform.scale(
-                pygame.image.load(RUTA_DADOS.format(i)),
-                DADO_SIZE
+    def _cargar_imagen_tablero(self):
+        """Carga la imagen del tablero desde el archivo."""
+        self.imagen_tablero = None
+        try:
+            ruta_imagen = os.path.join("assets", "Tablero.png")
+            imagen_cargada = pygame.image.load(ruta_imagen).convert()
+            self.imagen_tablero = pygame.transform.scale(
+                imagen_cargada, (ANCHO_PANTALLA, ALTO_PANTALLA)
             )
-            for i in range(1, 7)
+            print("Imagen de tablero cargada exitosamente.")
+        except (pygame.error, FileNotFoundError) as error:
+            print(f"ERROR: No se pudo cargar la imagen del tablero. Error: {error}")
+            self.imagen_tablero = None
+
+    def _inicializar_jugadores(self):
+        """Inicializa los jugadores para la interfaz gráfica."""
+        # Simulación de inicialización de jugadores
+        self.juego.jugadores.nombre1 = "Jugador 1"
+        self.juego.jugadores.nombre2 = "Jugador 2"
+        self.juego.jugadores.color1 = "○"
+        self.juego.jugadores.color2 = "●"
+        self.juego.jugadores = {
+            "B": {"nombre": "Jugador 1 (Blancas)", "color": "B"},
+            "N": {"nombre": "Jugador 2 (Negras)", "color": "N"},
+        }
+
+    def dibujar_tablero(self):
+        """Dibuja la representación gráfica del tablero de Backgammon."""
+        # Dibujar la imagen de fondo primero
+        if self.imagen_tablero:
+            self.pantalla.blit(self.imagen_tablero, (0, 0))
+        else:
+            self.pantalla.fill(GRIS_CLARO)
+            
+        self._dibujar_estructura_tablero()
+        self._dibujar_estado_juego()
+        self._dibujar_puntos_tablero()
+
+    def _dibujar_estructura_tablero(self):
+        """Dibuja la estructura básica del tablero."""
+        pygame.draw.rect(
+            self.pantalla, NEGRO, 
+            (20, 20, ANCHO_PANTALLA - 40, ALTO_PANTALLA - 40), 2
+        )
+        pygame.draw.line(
+            self.pantalla, NEGRO, 
+            (ANCHO_PANTALLA // 2, 20), 
+            (ANCHO_PANTALLA // 2, ALTO_PANTALLA - 20), 2
+        )
+
+    def _dibujar_estado_juego(self):
+        """Dibuja el estado del juego (barra, fuera, turno, dados)."""
+        # Información de barra y fuera
+        textos_estado = [
+            (f"Barra B: {len(self.juego.tablero.barra_blancas)}", 40, AZUL),
+            (f"Barra N: {len(self.juego.tablero.barra_negras)}", 60, ROJO),
+            (f"Fuera B: {len(self.juego.tablero.fuera_blancas)}", 90, AZUL),
+            (f"Fuera N: {len(self.juego.tablero.fuera_negras)}", 110, ROJO),
         ]
+        
+        for texto, pos_y, color in textos_estado:
+            superficie = self.fuente_base.render(texto, True, BLANCO, color)
+            self.pantalla.blit(superficie, (ANCHO_PANTALLA - 150, pos_y))
 
-    def _generar_coordenadas(self) -> Dict[int, Tuple[int, int]]:
-        """Genera las coordenadas de cada punto del tablero."""
-        coords: Dict[int, Tuple[int, int]] = {}
-        for i in range(1, 25):
-            x_base = 150 + (i - 1) % 6 * 80
-            x_offset = 200 if 7 <= i <= 12 else 0
-            x_mirror = ((24 - i) % 6 * 80) if i > 12 else 0
-            x = x_base + x_offset + x_mirror
-            y = 900 if i <= 12 else 150
-            coords[i] = (x, y)
-        return coords
+        # Turno actual
+        jugador_actual = self.juego.obtener_jugador_actual()
+        texto_turno = self.fuente_base.render(
+            f"Turno: {jugador_actual['nombre']} ({self.juego.turno_actual})",
+            True, NEGRO
+        )
+        self.pantalla.blit(texto_turno, (20, 20))
 
-    def _inicializar_fichas(self) -> None:
-        """Coloca las fichas iniciales en el tablero."""
-        self.posiciones = {i: [] for i in range(1, 25)}
+        # Dados
+        if self.dados_resultado:
+            dados_texto = f"Dados: {', '.join(map(str, self.dados_resultado))}"
+        else:
+            dados_texto = "Presiona ESPACIO para tirar dados"
+            
+        texto_dados = self.fuente_base.render(dados_texto, True, NEGRO)
+        self.pantalla.blit(texto_dados, (20, 50))
 
-        # Distribución inicial ejemplo
-        self.posiciones[1].append(("Blanca", 3))
-        self.posiciones[2].append(("Blanca", 5))
-        self.posiciones[5].append(("Blanca", 2))
-        self.posiciones[7].append(("Blanca", 5))
-        self.posiciones[20].append(("Negra", 5))
-        self.posiciones[21].append(("Negra", 3))
-        self.posiciones[23].append(("Negra", 5))
-        self.posiciones[24].append(("Negra", 2))
+    def _dibujar_puntos_tablero(self):
+        """Dibuja los puntos del tablero con sus fichas."""
+        x_start_izq = 50
+        x_start_der = ANCHO_PANTALLA // 2 + 30
+        y_start = 50
 
+        # Puntos 1-12 (Abajo)
+        for i in range(1, 13):
+            x_pos = x_start_izq + ((i - 1) * 25 if i <= 6 else (i - 1) * 25 + 20)
+            fichas_str = "".join(self.juego.tablero.celda[i])
+            texto_punto = self.fuente_base.render(f"{i}: {fichas_str}", True, NEGRO)
+            self.pantalla.blit(texto_punto, (x_pos, ALTO_PANTALLA - y_start))
 
-    @staticmethod
-    def _tirar_dados() -> Tuple[int, int, int]:
-        """Genera dos valores aleatorios de dados."""
+        # Puntos 13-24 (Arriba)
+        for i in range(13, 25):
+            if i <= 18:
+                j = 24 - i
+                x_pos = x_start_izq + (j * 25)
+            else:
+                j = 24 - i
+                x_pos = x_start_der + ((j - 6) * 25)
+
+            fichas_str = "".join(self.juego.tablero.celda[i])
+            texto_punto = self.fuente_base.render(f"{i}: {fichas_str}", True, NEGRO)
+            self.pantalla.blit(texto_punto, (x_pos, y_start))
+
+    def manejar_eventos(self):
+        """Maneja los eventos de Pygame."""
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                self.corriendo = False
+            elif evento.type == pygame.KEYDOWN:
+                self._manejar_teclas_presionadas(evento)
+
+    def _manejar_teclas_presionadas(self, evento):
+        # Teclas de control
+        """Maneja las teclas presionadas durante el juego."""
+        if evento.key == pygame.K_SPACE and self.estado_juego == "ESPERANDO_DADOS":
+            self._tirar_dados()
+        elif (evento.key == pygame.K_m and 
+            self.estado_juego == "HACIENDO_MOVIMIENTOS" and 
+            self.dados_resultado):
+            self._procesar_movimiento_prueba()
+
+    def _tirar_dados(self):
+        """Simula el lanzamiento de dados."""
         dado1 = random.randint(1, 6)
         dado2 = random.randint(1, 6)
-        jugadas = 4 if dado1 == dado2 else 2
-        return dado1, dado2, jugadas
-
-    def _cambiar_turno(self) -> None:
-        """Alterna el turno entre Blanco y Negro."""
-        self.estado.turno_actual = (
-            "Negro" if self.estado.turno_actual == "Blanco" else "Blanco"
-        )
-
-    def _dibujar_tablero(self) -> None:
-        """Dibuja el fondo del tablero con overlay de turno."""
-        fondo_color = (
-            COLOR_TURNO_BLANCO if self.estado.turno_actual == "Blanco"
-            else COLOR_TURNO_NEGRO
-        )
-        fondo = self.background_base.copy()
-        overlay = pygame.Surface((WIDTH, HEIGHT))
-        overlay.set_alpha(60)
-        overlay.fill(fondo_color)
-        fondo.blit(overlay, (0, 0))
-        self.window.blit(fondo, (0, 0))
-
-    def _dibujar_dados_y_texto(self) -> None:
-        """Dibuja los dados y la información del turno."""
-        if not (self.estado.dado1 and self.estado.dado2):
-            return
-
-        self.window.blit(self.dados_imgs[self.estado.dado1 - 1], (250, 250))
-        self.window.blit(self.dados_imgs[self.estado.dado2 - 1], (450, 250))
-
-        font = pygame.font.SysFont(None, 48)
-        texto_jugadas = font.render(f"Jugadas: {self.estado.jugadas}", True, (0, 0, 255))
-        self.window.blit(texto_jugadas, (300, 400))
-
-        color_turno = (0, 0, 0) if self.estado.turno_actual == "Blanco" else (80, 0, 0)
-        texto_turno = font.render(
-            f"Turno: {self.estado.turno_actual}",
-            True,
-            color_turno
-        )
-        self.window.blit(texto_turno, (300, 460))
-
-    def loop_principal(self) -> None:
-        """Ejecuta el bucle principal del juego gráfico."""
-        while self.estado.running:
-            self._manejar_eventos()
-
-            # Dibujar en el orden correcto:
-            self._dibujar_tablero()       # Fondo del tablero
-            self._dibujar_fichas()        # Fichas sobre el tablero
-            self._dibujar_dados_y_texto() # Dados y texto sobre todo
-
-            pygame.display.update()
-            self.clock.tick(FPS)
         
+        # Si los dados son iguales, se simulan 4 movimientos de ese dado
+        if dado1 == dado2:
+            self.dados_resultado = [dado1, dado1, dado1, dado1]
+            print(f"DOBLES {dado1}! {self.juego.turno_actual} tiene 4 movimientos de {dado1}")
+        else:
+            self.dados_resultado = [dado1, dado2]
+            print(f"{self.juego.turno_actual} tira {dado1} y {dado2}")
+            
+        self.estado_juego = "HACIENDO_MOVIMIENTOS"
+
+    def _procesar_movimiento_prueba(self):
+        """Procesa un movimiento de prueba cuando se presiona M."""
+        if self.juego.tablero.puede_mover_desde_barra(self.juego.turno_actual):
+            self._mover_desde_barra()
+        else:
+            self._mover_ficha_normal()
+            
+        self._verificar_fin_turno()
+        self._verificar_victoria()
+
+    def _mover_desde_barra(self):
+        """Intenta mover una ficha desde la barra."""
+        dado_usar = self.dados_resultado[0]
+        punto_destino = dado_usar if self.juego.turno_actual == "B" else 25 - dado_usar
+        exito, mensaje = self.juego.procesar_movimiento(0, punto_destino, dado_usar)
+        print(f"Intento de mover desde barra: {mensaje}")
+        if exito:
+            self.dados_resultado.pop(0)
+
+    def _mover_ficha_normal(self):
+        """Intenta mover una ficha normal."""
+        dado_usar = max(self.dados_resultado)
+        desde, hasta = self._encontrar_movimiento_simple(dado_usar)
+
+        if desde is not None:
+            exito, mensaje = self.juego.procesar_movimiento(desde, hasta, dado_usar)
+            print(f"Intento de mover {desde} a {hasta}: {mensaje}")
+            if exito:
+                self.dados_resultado.remove(dado_usar)
+        else:
+            print("No se encontró un movimiento simple para el dado más grande.")
+
+    def _verificar_fin_turno(self):
+        """Verifica si el turno ha terminado."""
+        if not self.dados_resultado:
+            print(f"Fin del turno para {self.juego.turno_actual}")
+            self.juego.cambiar_turno()
+            self.estado_juego = "ESPERANDO_DADOS"
+
+    def _verificar_victoria(self):
+        """Verifica si hay un ganador."""
+        ganador, color_ganador = self.juego.tablero.win_conditions()
+        if ganador:
+            nombre_ganador = self.juego.jugadores[color_ganador]["nombre"]
+            print(f"\n¡Felicidades {nombre_ganador}! Has ganado el juego.")
+            self.corriendo = False
+
+    def _encontrar_movimiento_simple(self, dado):
+        """Busca el primer movimiento válido simple para el jugador actual."""
+        jugador = self.juego.turno_actual
+        fichas_jugador = "○" if jugador == "B" else "●"
+        
+        puntos_busqueda = range(24, 0, -1) if jugador == "B" else range(1, 25)
+        
+        for desde in puntos_busqueda:
+            if (self.juego.tablero.celda[desde] and 
+                self.juego.tablero.celda[desde][0] == fichas_jugador):    
+                movimiento_valido = self._verificar_movimiento_valido(desde, dado, jugador)
+                if movimiento_valido:
+                    return movimiento_valido
+        return None, None
+
+    def _verificar_movimiento_valido(self, desde, dado, jugador):
+        """Verifica si un movimiento es válido."""
+        hasta = desde + dado if jugador == "B" else desde - dado
+        # Verificar bear off
+        if self._es_bear_off_valido(desde, hasta, jugador, dado):
+            valido, _ = self.juego.tablero.movimiento_valido(desde, 25, jugador, dado)
+            if valido:
+                return desde, 25
+        # Verificar movimiento normal
+        if 1 <= hasta <= 24:
+            valido, _ = self.juego.tablero.movimiento_valido(desde, hasta, jugador, dado)
+            if valido:
+                return desde, hasta
+        return None
+
+    def _es_bear_off_valido(self, desde, hasta, jugador, dado):
+        """Verifica si un bear off es válido."""
+        if jugador == "B" and hasta > 24:
+            return (self.juego.tablero.puede_sacar(jugador) and 
+                    (25 - desde) == dado)
+        elif jugador == "N" and hasta < 1:
+            return (self.juego.tablero.puede_sacar(jugador) and 
+                    desde == dado)
+        return False
+
+    def ejecutar(self):
+        """Bucle principal del juego."""
+        self.corriendo = True
+        while self.corriendo:
+            self.manejar_eventos()
+            self.dibujar_tablero()
+            pygame.display.flip()
+            self.reloj.tick(FPS) 
         pygame.quit()
-
-
-    def _manejar_eventos(self) -> None:
-        """Maneja los eventos del juego."""
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.estado.running = False
-            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.estado.dado1, self.estado.dado2, self.estado.jugadas = self._tirar_dados()
-                self._cambiar_turno()
-
-    def _dibujar_fichas(self) -> None:
-        """Dibuja todas las fichas en el tablero, apiladas correctamente según su posición."""
-        for punto, fichas in self.posiciones.items():
-            x, y = self.coords[punto]
-            for ficha_color, cantidad in fichas:
-                img = self.ficha_blanca_img if ficha_color == "Blanca" else self.ficha_negra_img
-                for i in range(cantidad):
-                    # Si el punto está en la mitad superior del tablero, apilar hacia abajo
-                    if y < HEIGHT // 2:
-                        self.window.blit(img, (x, y + i * 30))
-                    # Si el punto está en la mitad inferior del tablero, apilar hacia arriba
-                    else:
-                        self.window.blit(img, (x, y - i * 30))
-
+        sys.exit()
 
 if __name__ == "__main__":
-    juego = Screen()
-    juego.loop_principal()
+    juego_gui = GameGUI()
+    juego_gui.ejecutar()
