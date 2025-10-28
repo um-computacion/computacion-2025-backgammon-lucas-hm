@@ -147,7 +147,7 @@ class TestJuegoMejorado(unittest.TestCase):
         ), patch("builtins.print") as mock_print:
             self.juego.jugar()
             mock_print.assert_any_call("Juego terminado por el usuario")
-    
+
     @patch("core.juego.Jugador")
     def test_inicializar_jugadores(self, mock_jugador_cls):
         """Test para inicializar_jugadores"""

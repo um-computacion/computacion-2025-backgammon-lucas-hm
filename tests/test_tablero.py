@@ -1,7 +1,6 @@
 import unittest
 from core.tablero import board
 
-
 class TestBoard(unittest.TestCase):
 
     def setUp(self):
@@ -28,12 +27,12 @@ class TestBoard(unittest.TestCase):
         # Verificar que inicialmente no se puede mover desde barra
         self.assertFalse(self.board.puede_mover_desde_barra("B"))
         self.assertFalse(self.board.puede_mover_desde_barra("N"))
-        
+
         # Agregar fichas a la barra blanca y verificar
         self.board.barra_blancas = ["B", "B"]
         self.assertTrue(self.board.puede_mover_desde_barra("B"))
         self.assertFalse(self.board.puede_mover_desde_barra("N"))
-        
+
         # Agregar fichas a la barra negra y verificar
         self.board.barra_negras = ["N"]
         self.assertTrue(self.board.puede_mover_desde_barra("N"))
@@ -102,7 +101,7 @@ class TestBoard(unittest.TestCase):
         # Verificar condiciones iniciales
         self.assertTrue(self.board.puede_sacar("B"))
         self.assertTrue(self.board.puede_sacar("N"))
-        
+
         # Configurar tablero para prueba de sacar fichas
         for i in range(1, 19):
             self.board.celda[i] = []
@@ -132,13 +131,13 @@ class TestBoard(unittest.TestCase):
         # Verificar que inicialmente no hay ganador
         ganador, jugador = self.board.win_conditions()
         self.assertFalse(ganador)
-        
+
         # Simular victoria de blancas
         self.board.fuera_blancas = ["○"] * 15
         ganador, jugador = self.board.win_conditions()
         self.assertTrue(ganador)
         self.assertEqual(jugador, "B")
-        
+
         # Simular victoria de negras
         self.board.fuera_blancas = []
         self.board.fuera_negras = ["●"] * 15
@@ -154,7 +153,7 @@ class TestBoard(unittest.TestCase):
         ganador, jugador = self.board.win_conditions()
         self.assertTrue(ganador)
         self.assertEqual(jugador, "○")
-        
+
         # Configurar 4 fichas negras consecutivas
         for i in range(1, 25):
             self.board.celda[i] = []
