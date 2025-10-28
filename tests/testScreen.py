@@ -4,7 +4,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import pygame
 
-from pygame_ui.screen import Screen
+from pygame_ui.screen import GameGUI
 
 
 class TestScreen(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestScreen(unittest.TestCase):
         mock_display.return_value = MagicMock()
         mock_font.return_value = MagicMock()
 
-        self.screen = Screen()
+        self.screen = GameGUI()
 
     def test_inicializar_fichas(self):
         """Verifica que las posiciones iniciales tengan las fichas correctas"""
