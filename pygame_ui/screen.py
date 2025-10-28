@@ -1,15 +1,11 @@
-import pygame
+import os
 import sys
 import random
-import os
 
-# Importar las clases de lógica del juego
-from core.dice import Dice
-from core.tablero import board
-from core.jugador import Jugador
+import pygame
+
 from core.juego import Juego
 
-# --- Configuración de Pygame ---
 ANCHO_PANTALLA = 800
 ALTO_PANTALLA = 600
 CAPTION = "Backgammon en Pygame"
@@ -21,7 +17,6 @@ BLANCO = (255, 255, 255)
 GRIS_CLARO = (200, 200, 200)
 ROJO = (255, 0, 0)
 AZUL = (0, 0, 255)
-
 
 class GameGUI:
     """Clase principal para la interfaz gráfica del juego."""
@@ -36,7 +31,7 @@ class GameGUI:
         self.dados_resultado = []
         self.estado_juego = "ESPERANDO_DADOS"
         self.corriendo = False
-        
+
         self._cargar_imagen_tablero()
         self._inicializar_jugadores()
 
@@ -73,7 +68,7 @@ class GameGUI:
             self.pantalla.blit(self.imagen_tablero, (0, 0))
         else:
             self.pantalla.fill(GRIS_CLARO)
-            
+
         self._dibujar_estructura_tablero()
         self._dibujar_estado_juego()
         self._dibujar_puntos_tablero()
@@ -99,7 +94,7 @@ class GameGUI:
             (f"Fuera B: {len(self.juego.tablero.fuera_blancas)}", 90, AZUL),
             (f"Fuera N: {len(self.juego.tablero.fuera_negras)}", 110, ROJO),
         ]
-        
+
         for texto, pos_y, color in textos_estado:
             superficie = self.fuente_base.render(texto, True, BLANCO, color)
             self.pantalla.blit(superficie, (ANCHO_PANTALLA - 150, pos_y))
@@ -117,7 +112,7 @@ class GameGUI:
             dados_texto = f"Dados: {', '.join(map(str, self.dados_resultado))}"
         else:
             dados_texto = "Presiona ESPACIO para tirar dados"
-            
+
         texto_dados = self.fuente_base.render(dados_texto, True, NEGRO)
         self.pantalla.blit(texto_dados, (20, 50))
 
@@ -169,7 +164,7 @@ class GameGUI:
         """Simula el lanzamiento de dados."""
         dado1 = random.randint(1, 6)
         dado2 = random.randint(1, 6)
-        
+
         # Si los dados son iguales, se simulan 4 movimientos de ese dado
         if dado1 == dado2:
             self.dados_resultado = [dado1, dado1, dado1, dado1]
@@ -177,7 +172,7 @@ class GameGUI:
         else:
             self.dados_resultado = [dado1, dado2]
             print(f"{self.juego.turno_actual} tira {dado1} y {dado2}")
-            
+
         self.estado_juego = "HACIENDO_MOVIMIENTOS"
 
     def _procesar_movimiento_prueba(self):
@@ -186,7 +181,7 @@ class GameGUI:
             self._mover_desde_barra()
         else:
             self._mover_ficha_normal()
-            
+
         self._verificar_fin_turno()
         self._verificar_victoria()
 
@@ -231,9 +226,9 @@ class GameGUI:
         """Busca el primer movimiento válido simple para el jugador actual."""
         jugador = self.juego.turno_actual
         fichas_jugador = "○" if jugador == "B" else "●"
-        
+
         puntos_busqueda = range(24, 0, -1) if jugador == "B" else range(1, 25)
-        
+
         for desde in puntos_busqueda:
             if (self.juego.tablero.celda[desde] and 
                 self.juego.tablero.celda[desde][0] == fichas_jugador):    
@@ -277,6 +272,7 @@ class GameGUI:
             self.reloj.tick(FPS) 
         pygame.quit()
         sys.exit()
+
 
 if __name__ == "__main__":
     juego_gui = GameGUI()
