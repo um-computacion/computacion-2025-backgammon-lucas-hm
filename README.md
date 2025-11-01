@@ -39,3 +39,17 @@ El main muestra un menú de opciones para elegir entre la CLI y la GUI. La CLI s
 ### CLI y GUI
 
 La CLI se encarga de la lógica de juego y proporciona una interfaz de usuario simple para el usuario. Mientras que el pygame es una interfaz gráfica que se encarga de mostrar la partida en pantalla.
+
+### Build and RUN the container
+
+Build the container:
+
+```bash
+docker build -t backgammon-app .
+```
+
+Run the container:
+
+```bash
+docker run --name my-backgammon -it backgammon-app
+```
