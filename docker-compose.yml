@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  backgammon:
+    # This tells Docker Compose to build the image using the Dockerfile 
+    # located in the current directory (.).
+    build: . 
+    # Gives the running container a friendly name
+    container_name: backgammon_game
+    # Automatically removes the container when it exits (useful for testing)
+    # If your game is interactive, you might need stdin_open: true and tty: true
+    stdin_open: true # Keeps standard input open
+    tty: true        # Allocates a pseudo-TTY
+
+    # If your game was a web service, you'd map a port here:
+    # ports:
+    #   - "8080:8080"
